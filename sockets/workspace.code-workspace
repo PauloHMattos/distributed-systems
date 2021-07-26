@@ -1,0 +1,16 @@
+{
+    "folders": [
+      {
+        "name": "root",
+        "path": "."
+      },
+      {
+        "name": "Consumer",
+        "path": "consumer"
+      },
+      {
+        "name": "Producer",
+        "path": "producer"
+      }
+    ]
+  }
