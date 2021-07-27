@@ -77,3 +77,13 @@ void Client::Loop()
     // clear buffer
     memset(input_buffer_, 0, input_buffer_size_);
 }
+
+int Client::Send(unsigned char* buffer, int length)
+{
+    int sent = send(socket_handle_, buffer, length, 0);
+    if (sent < 0)
+    {
+        perror("[CLIENT] [ERROR] send() failed");
+    }
+    return sent;
+}

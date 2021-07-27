@@ -16,7 +16,8 @@ public:
     void Disconnect();
     void Loop();
     int GetLastErrorCode();
-    
+    int Send(unsigned char* buffer, int length);
+
 private:
     int input_buffer_size_;
     unsigned char* input_buffer_;

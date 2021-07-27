@@ -157,3 +157,13 @@ void Server::RecvFromConnection(int connection_handle)
     // clear buffer
     memset(input_buffer_, 0, input_buffer_size_);
 }
+
+int Server::Send(int connection_handle, unsigned char* buffer, int length)
+{
+    int sent = send(connection_handle, buffer, length, 0);
+    if (sent < 0)
+    {
+        perror("[Server] [ERROR] send() failed");
+    }
+    return sent;
+}

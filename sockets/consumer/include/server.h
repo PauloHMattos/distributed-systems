@@ -14,7 +14,8 @@ public:
     void Loop();
     void Disconnect(int connection_handle);
     int GetLastErrorCode();
-
+    int Send(int connection_handle, unsigned char* buffer, int length);
+    
 private:
     int max_connections_;
     unsigned short port_;
