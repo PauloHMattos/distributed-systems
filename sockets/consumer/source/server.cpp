@@ -20,14 +20,14 @@ Server::Server(unsigned short port, int max_connections, int input_buffer_size)
 
     if (server_handle_ < 0)
     {
-        perror("Failure to create the socket");
+        perror("[SERVER] [ERROR] Failure to create the socket");
         exit(EXIT_FAILURE);
     }
 
 	int opt_value = 1;
     if (setsockopt(server_handle_, SOL_SOCKET, SO_REUSEADDR, (char *) &opt_value, sizeof (int)) < 0)
     {
-        perror("Failure to set socket options");
+        perror("[SERVER] [ERROR] Failure to set socket options");
         exit(EXIT_FAILURE);
     }
 
@@ -49,7 +49,7 @@ bool Server::Bind()
 {
     if (bind(server_handle_, (struct sockaddr*)&socketAddr_, sizeof(socketAddr_))<0)
     {
-        perror("Failure to bind socket");
+        perror("[SERVER] [ERROR] Failure to bind socket");
         exit(EXIT_FAILURE);
         return false;
     }
@@ -78,7 +78,7 @@ void Server::Listen()
 {
     if (listen(server_handle_, max_connections_) < 0)
     {
-        perror("listen");
+        perror("[SERVER] [ERROR] Listen failed");
         exit(EXIT_FAILURE);
     }
 }
