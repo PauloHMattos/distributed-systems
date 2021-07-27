@@ -4,7 +4,7 @@
 #
 
 # define the Cpp compiler to use
-CXX = g++-10
+CXX = g++
 
 # define any compile-time flags
 CXXFLAGS	:= -std=c++17 -Wall -Wextra -g -Ofast -fopenmp
@@ -34,6 +34,7 @@ LIBDIRS		:= $(LIB)
 FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
 MD	:= mkdir
+LFLAGS += -lws2_32
 else
 MAIN	:= main
 SOURCEDIRS	:= $(shell find $(SRC) -type d)

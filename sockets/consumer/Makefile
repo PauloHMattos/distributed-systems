@@ -4,15 +4,15 @@
 #
 
 # define the Cpp compiler to use
-CXX = g++-10
+CXX = g++
 
 # define any compile-time flags
-CXXFLAGS	:= -std=c++17 -Wall -Wextra -g -Ofast -fopenmp
+CXXFLAGS	:= -std=c++17 -Wall -Wextra -g #-Ofast -fopenmp
 
 # define library paths in addition to /usr/lib
 #   if I wanted to include libraries not in /usr/lib I'd specify
 #   their path using -Lpath, something like:
-LFLAGS =
+LFLAGS = 
 
 # define output directory
 OUTPUT	:= output
@@ -34,6 +34,7 @@ LIBDIRS		:= $(LIB)
 FIXPATH = $(subst /,\,$1)
 RM			:= del /q /f
 MD	:= mkdir
+LFLAGS += -lws2_32
 else
 MAIN	:= main
 SOURCEDIRS	:= $(shell find $(SRC) -type d)
