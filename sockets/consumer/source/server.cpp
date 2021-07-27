@@ -18,7 +18,7 @@ Server::Server(unsigned short port, int max_connections, int input_buffer_size)
     // SOCK_DGRAM for UDP
     server_handle_ = socket(AF_INET, SOCK_STREAM, 0);
 
-    if (server_handle_ != 0)
+    if (server_handle_ < 0)
     {
         perror("Failure to create the socket");
         exit(EXIT_FAILURE);

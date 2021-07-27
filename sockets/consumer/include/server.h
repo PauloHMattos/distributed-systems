@@ -1,9 +1,7 @@
-#pragma include once
+#pragma once
 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <vector>
-using namespace std;
 
 class Server
 {
