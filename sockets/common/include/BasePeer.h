@@ -18,7 +18,7 @@ public:
 
     bool Bind(short port);
     bool Listen(int max_connections);
-    bool Connect(string remote_address);
+    bool Connect(string remote_address, short port);
 
     int Send(SOCKET handle, BUFFER buffer, int length);
 

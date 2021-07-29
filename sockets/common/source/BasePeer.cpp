@@ -1,4 +1,5 @@
 #include "BasePeer.h"
+#include <iostream>
 
 BasePeer::BasePeer(int input_buffer_size) :
     input_buffer_size_(input_buffer_size)
@@ -89,7 +90,6 @@ bool BasePeer::Bind(short port)
 
 bool BasePeer::Listen(int max_connections)
 {
-    socketAddr_.sin_addr.s_addr = INADDR_ANY;
     if (listen(socket_handle_, max_connections_) < 0)
     {
         perror("[SERVER] [ERROR] Listen failed");
@@ -107,9 +107,13 @@ bool BasePeer::Listen(int max_connections)
     return true;
 }
 
-bool BasePeer::Connect(string remote_address)
+bool BasePeer::Connect(string remote_address, short port)
 {
     is_listening_ = false;
+
+    memset(&socketAddr_, 0, sizeof(socketAddr_));
+    socketAddr_.sin_port = htons(port);
+    socketAddr_.sin_family = AF_INET;
     socketAddr_.sin_addr.s_addr = inet_addr(remote_address.c_str());
 
     if (connect(socket_handle_, (struct sockaddr *)&socketAddr_, sizeof(socketAddr_)) < 0)
@@ -150,6 +154,7 @@ void BasePeer::Update()
 
 void BasePeer::UpdateClient()
 {
+    cout << "UpdateClient()" << endl;
     RecvFromConnection(socket_handle_);
 }
 

@@ -1,9 +1,8 @@
 #include "Client.h"
 
-Client::Client(short port, int input_buffer_size)
+Client::Client(short port, int input_buffer_size) : port_(port)
 {
     peer_ = new BasePeer(input_buffer_size);
-    peer_->Bind(port);
 }
 
 Client::~Client()
@@ -13,7 +12,7 @@ Client::~Client()
 
 bool Client::Connect(string address)
 {
-    return peer_->Connect(address);
+    return peer_->Connect(address, port_);
 }
 
 void Client::Loop()

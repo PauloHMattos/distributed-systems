@@ -10,9 +10,5 @@ int main(void)
     {
         exit(EXIT_FAILURE);
     }
-    while(true)
-    {
-        cout << "Loop" << endl;
-        client.Loop();
-    }
+    client.Loop();
 }

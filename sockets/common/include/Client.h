@@ -12,5 +12,6 @@ public:
     void Loop();
 
 private:
+    short port_;
     BasePeer *peer_;
 };
