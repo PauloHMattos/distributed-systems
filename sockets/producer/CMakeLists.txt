@@ -1,15 +1,16 @@
 cmake_minimum_required(VERSION 3.0.0)
-project(producerProj VERSION 0.1.0)
+project(producer C CXX)
 
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/bin)
 
-include_directories(include)
-AUX_SOURCE_DIRECTORY(source SOURCES) 
+file(GLOB COMMON_FILES ../common/source/*.cpp)
+file(GLOB CPP_FILES source/*.cpp)
 
-link_directories(../common/bin)
-set(WRAPPER_LIB socketswrapper${CMAKE_SHARED_LIBRARY_SUFFIX})
+include_directories(../common/include)
 
-add_executable(producer ${SOURCES})
-target_link_libraries(producer PRIVATE ${WRAPPER_LIB})
-target_include_directories(producer PRIVATE ../common/include)
+add_executable(${PROJECT_NAME} ${CPP_FILES} ${COMMON_FILES})
+if (WIN32)
+    target_link_libraries(${PROJECT_NAME} ws2_32)
+endif()
