@@ -16,12 +16,9 @@ bool Client::Connect(string address)
     return socket_handle_ > 0;
 }
 
-void Client::Loop()
+bool Client::Update()
 {
-    while(true)
-    {
-        peer_->Update();
-    }
+    return peer_->Update();
 }
 
 void Client::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),

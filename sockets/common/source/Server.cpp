@@ -18,13 +18,9 @@ bool Server::Start()
     return peer_->Listen(max_connections_);
 }
 
-void Server::Loop()
+bool Server::Update()
 {
-    while (true)
-    {
-        cout << "Loop" << endl;
-        peer_->Update();
-    }
+    return peer_->Update();
 }
 
 void Server::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),

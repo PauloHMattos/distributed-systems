@@ -23,7 +23,7 @@ public:
 
     int Send(SOCKET handle, BUFFER buffer, int length);
 
-    void Update();
+    bool Update();
 
     void SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
                       void(*on_connect)(SOCKET handle),
@@ -52,8 +52,8 @@ private:
     void (*on_disconnect_callback) (SOCKET fd);
 
     int Poll();
-    void UpdateServer();
-    void UpdateClient();
+    bool UpdateServer();
+    bool UpdateClient();
 
     int RecvFromConnection(SOCKET handle);
     void HandleNewConnection();

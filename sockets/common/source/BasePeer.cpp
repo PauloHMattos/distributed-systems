@@ -155,29 +155,27 @@ int BasePeer::Poll()
     return select(max_fds_ + 1, &read_fds_, NULL, NULL, NULL);
 }
 
-void BasePeer::Update()
+bool BasePeer::Update()
 {
     if (is_listening_)
     {
-        UpdateServer();
-        return;
+        return UpdateServer();
     }
-    UpdateClient();
+    return UpdateClient();
 }
 
-void BasePeer::UpdateClient()
+bool BasePeer::UpdateClient()
 {
-    cout << "UpdateClient()" << endl;
-    RecvFromConnection(socket_handle_);
+    return RecvFromConnection(socket_handle_) > 0;
 }
 
-void BasePeer::UpdateServer()
+bool BasePeer::UpdateServer()
 {
     int sel = Poll();
     if (sel == -1)
     {
         PrintError("Select failed");
-        exit(EXIT_FAILURE);
+        return false;
     }
     //no problems, we're all set
 
@@ -199,6 +197,7 @@ void BasePeer::UpdateServer()
             }
         } //loop on to see if there is more
     }
+    return true;
 }
 
 int BasePeer::RecvFromConnection(SOCKET handle)

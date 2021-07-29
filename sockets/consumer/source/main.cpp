@@ -21,7 +21,9 @@ int main(void) {
     server.SetCallbacks(&OnRecvFromClient, &OnClientConnected, &OnClientDisconnected);
 
     server.Start();
-    server.Loop();
+    while(server.Update())
+    {
+    }
 }
 
 void OnRecvFromClient(SOCKET client_handle, BUFFER buffer, int length)

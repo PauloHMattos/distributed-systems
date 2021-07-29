@@ -15,6 +15,7 @@ void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length);
 void OnConnected(SOCKET client_handle);
 void OnDisconnected(SOCKET client_handle);
 
+
 int main(void)
 {
     writer.SetBuffer(buffer, BUFFER_LENGTH);
@@ -24,7 +25,13 @@ int main(void)
     {
         exit(EXIT_FAILURE);
     }
-    client.Loop();
+
+    do
+    {
+        writer.Reset();
+        writer.WriteInt32(100);
+        client.Send(writer);
+    } while(client.Update());
 }
 
 void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length)
@@ -35,9 +42,6 @@ void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length)
 void OnConnected(SOCKET client_handle)
 {
     cout << "Connection to server stablished: " << client_handle << endl;
-    writer.Reset();
-    writer.WriteInt32(100);
-    client.Send(writer); 
 }
 
 void OnDisconnected(SOCKET client_handle)

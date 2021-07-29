@@ -10,7 +10,7 @@ public:
     ~Client();
     bool Connect(string address);
     void Disconnect();
-    void Loop();
+    bool Update();
 
     void SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
                       void(*on_connect)(SOCKET handle),

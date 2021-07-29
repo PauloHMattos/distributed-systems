@@ -9,7 +9,7 @@ public:
     Server(short port, int max_connections, int input_buffer_size);
     ~Server();
     bool Start();
-    void Loop();
+    bool Update();
     
     void SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
                       void(*on_connect)(SOCKET handle),
