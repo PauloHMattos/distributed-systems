@@ -1,25 +1,25 @@
-#include "BufferWritter.h"
+#include "BufferWriter.h"
 
-BufferWritter::BufferWritter(unsigned char *buffer, int length) :
+BufferWriter::BufferWriter(unsigned char *buffer, int length) :
     position_(0),
     buffer_(buffer),
     buffer_length_(length)
 {
 }
 
-int BufferWritter::getPosition()
+int BufferWriter::getPosition()
 {
     return position_;
 }
 
-void BufferWritter::WriteInt32(int32_t value)
+void BufferWriter::WriteInt32(int32_t value)
 {
     value = htonl(value);
     memcpy(&buffer_[position_], &value, sizeof(int32_t));
     position_++;
 }
 
-void BufferWritter::WriteBoolean(bool value)
+void BufferWriter::WriteBoolean(bool value)
 {
     if (value)
     {

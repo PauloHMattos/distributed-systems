@@ -1,8 +1,7 @@
 #include "BasePeer.h"
 #include <iostream>
 
-BasePeer::BasePeer(int input_buffer_size) :
-    input_buffer_size_(input_buffer_size)
+BasePeer::BasePeer(int input_buffer_size) : input_buffer_size_(input_buffer_size)
 {
     input_buffer_ = (BUFFER)malloc(input_buffer_size);
     InitializeSocket();
@@ -52,7 +51,7 @@ void BasePeer::Close(SOCKET handle)
         return;
     }
 
-    //m_ConnectionClosedCallback();
+    on_disconnect_callback(handle);
 #if _WIN32
     closesocket(handle);
 #else
@@ -122,20 +121,20 @@ bool BasePeer::Connect(string remote_address, short port)
         exit(EXIT_FAILURE);
         return false;
     }
-    //m_ConnectedCallback(socket_handle_);
+    on_connect_callback(socket_handle_);
     return true;
 }
 
 int BasePeer::Send(SOCKET handle, BUFFER buffer, int length)
 {
-    int total = 0;        // how many bytes we've sent
+    int total = 0;           // how many bytes we've sent
     int bytes_left = length; // how many we have left to send
 
-    while(total < length)
+    while (total < length)
     {
         int n = send(handle, buffer + total, bytes_left, 0);
         if (n == -1)
-        { 
+        {
             PrintError("send() failed");
             break;
         }
@@ -212,10 +211,10 @@ int BasePeer::RecvFromConnection(SOCKET handle)
         {
             PrintError("recv failed");
         }
-        Close(handle);           // bye!
+        Close(handle); // bye!
         return -1;
     }
-    // Call callback
+    on_recv_callback(handle, input_buffer_, nbytes);
     return nbytes;
 }
 
@@ -237,10 +236,19 @@ void BasePeer::HandleNewConnection()
     {
         max_fds_ = new_connection_fd;
     }
-    //m_NewConnectionCallback(tempsocket_fd); //call the callback
+    on_connect_callback(new_connection_fd);
 }
 
-void BasePeer::PrintError(const char* pcMessagePrefix)
+void BasePeer::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+                            void (*on_connect)(SOCKET handle),
+                            void (*on_disconnect)(SOCKET handle))
+{
+    on_recv_callback = on_recv;
+    on_disconnect_callback = on_connect;
+    on_connect_callback = on_disconnect;
+}
+
+void BasePeer::PrintError(const char *pcMessagePrefix)
 {
     auto errorCode = GetLastErrorCode();
     cerr << "[ERROR] " << pcMessagePrefix << ": ";

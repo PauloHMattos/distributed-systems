@@ -3,10 +3,10 @@
 #include <cstdint>
 #include "Defines.h"
 
-class BufferWritter
+class BufferWriter
 {
 public:
-    BufferWritter(unsigned char* buffer, int length);
+    BufferWriter(unsigned char* buffer, int length);
     int getPosition();
 
     void WriteInt32(int32_t value);

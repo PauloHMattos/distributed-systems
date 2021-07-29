@@ -24,7 +24,9 @@ public:
 
     void Update();
 
-    void SetCallbacks();
+    void SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+                      void(*on_connect)(SOCKET handle),
+                      void(*on_disconnect)(SOCKET handle));
 
 private:
     int max_connections_;
@@ -42,6 +44,11 @@ private:
 
     //unsigned integer to keep track of maximum fd value, required for select()
     unsigned short max_fds_;
+
+    
+    void (*on_connect_callback) (SOCKET fd);
+    void (*on_recv_callback) (SOCKET fd, BUFFER buffer, int length);
+    void (*on_disconnect_callback) (SOCKET fd);
 
     int Poll();
     void UpdateServer();
