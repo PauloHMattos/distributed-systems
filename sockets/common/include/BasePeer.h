@@ -49,4 +49,6 @@ private:
 
     int RecvFromConnection(SOCKET handle);
     void HandleNewConnection();
+
+    void PrintError(const char* pcMessagePrefix);
 };

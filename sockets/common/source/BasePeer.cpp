@@ -24,7 +24,7 @@ void BasePeer::InitializeSocket()
     WSADATA wsa_data;
     if (WSAStartup(MAKEWORD(2, 2), &wsa_data) < 0)
     {
-        perror("[ERROR] Failure to initialize WinSock 2.2");
+        PrintError("Failure to initialize WinSock 2.2");
     }
 #endif
     // SOCK_STREAM for TCP
@@ -33,14 +33,14 @@ void BasePeer::InitializeSocket()
 
     if (socket_handle_ < 0)
     {
-        perror("[ERROR] Failure to create the socket");
+        PrintError("Failure to create the socket");
         exit(EXIT_FAILURE);
     }
 
     int opt_value = 1;
     if (setsockopt(socket_handle_, SOL_SOCKET, SO_REUSEADDR, (char *)&opt_value, sizeof(int)) < 0)
     {
-        perror("[ERROR] Failure to set socket options");
+        PrintError("Failure to set socket options");
         exit(EXIT_FAILURE);
     }
 }
@@ -81,7 +81,7 @@ bool BasePeer::Bind(short port)
     socketAddr_.sin_family = AF_INET;
     if (bind(socket_handle_, (struct sockaddr *)&socketAddr_, sizeof(socketAddr_)) < 0)
     {
-        perror("[SERVER] [ERROR] Failure to bind socket");
+        PrintError("Failure to bind socket");
         exit(EXIT_FAILURE);
         return false;
     }
@@ -92,7 +92,7 @@ bool BasePeer::Listen(int max_connections)
 {
     if (listen(socket_handle_, max_connections_) < 0)
     {
-        perror("[SERVER] [ERROR] Listen failed");
+        PrintError("Listen failed");
         exit(EXIT_FAILURE);
         return false;
     }
@@ -118,7 +118,7 @@ bool BasePeer::Connect(string remote_address, short port)
 
     if (connect(socket_handle_, (struct sockaddr *)&socketAddr_, sizeof(socketAddr_)) < 0)
     {
-        printf("[ERROR] Connection Failed, error: %d\n", GetLastErrorCode());
+        PrintError("Connection Failed");
         exit(EXIT_FAILURE);
         return false;
     }
@@ -136,7 +136,7 @@ int BasePeer::Send(SOCKET handle, BUFFER buffer, int length)
         int n = send(handle, buffer + total, bytes_left, 0);
         if (n == -1)
         { 
-            perror("[ERROR] send() failed");
+            PrintError("send() failed");
             break;
         }
         total += n;
@@ -172,7 +172,7 @@ void BasePeer::UpdateServer()
     int sel = Poll();
     if (sel == -1)
     {
-        perror("select");
+        PrintError("Select failed");
         exit(EXIT_FAILURE);
     }
     //no problems, we're all set
@@ -206,11 +206,11 @@ int BasePeer::RecvFromConnection(SOCKET handle)
         if (nbytes == 0)
         {
             // connection closed
-            printf("selectserver: socket %d hung up\n", handle);
+            cout << "Connection closed" << endl;
         }
         else
         {
-            perror("recv");
+            PrintError("recv failed");
         }
         Close(handle);           // bye!
         return -1;
@@ -226,7 +226,7 @@ void BasePeer::HandleNewConnection()
     int new_connection_fd = accept(socket_handle_, (struct sockaddr *)&client_addr, &addrlen);
     if (new_connection_fd == -1)
     {
-        perror("[ERROR] accept() failed");
+        PrintError("accept() failed");
         return;
     }
 
@@ -238,4 +238,12 @@ void BasePeer::HandleNewConnection()
         max_fds_ = new_connection_fd;
     }
     //m_NewConnectionCallback(tempsocket_fd); //call the callback
+}
+
+void BasePeer::PrintError(const char* pcMessagePrefix)
+{
+    auto errorCode = GetLastErrorCode();
+    cerr << "[ERROR] " << pcMessagePrefix << ": ";
+    cerr << " (Id = " << errorCode << ")";
+    cerr << endl;
 }
