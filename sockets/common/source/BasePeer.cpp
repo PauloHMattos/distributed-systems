@@ -128,12 +128,21 @@ bool BasePeer::Connect(string remote_address, short port)
 
 int BasePeer::Send(SOCKET handle, BUFFER buffer, int length)
 {
-    int sent = send(handle, (char *)buffer, length, 0);
-    if (sent < 0)
+    int total = 0;        // how many bytes we've sent
+    int bytes_left = length; // how many we have left to send
+
+    while(total < length)
     {
-        perror("[ERROR] send() failed");
+        int n = send(handle, buffer + total, bytes_left, 0);
+        if (n == -1)
+        { 
+            perror("[ERROR] send() failed");
+            break;
+        }
+        total += n;
+        bytes_left -= n;
     }
-    return sent;
+    return total;
 }
 
 int BasePeer::Poll()
