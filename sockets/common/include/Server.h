@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BasePeer.h"
+#include "BufferWriter.h"
 
 class Server
 {
@@ -14,6 +15,7 @@ public:
                       void(*on_connect)(SOCKET handle),
                       void(*on_disconnect)(SOCKET handle));
     
+    void Send(SOCKET handle, BufferWriter writer);
 private:
     BasePeer *peer_;
     int max_connections_;

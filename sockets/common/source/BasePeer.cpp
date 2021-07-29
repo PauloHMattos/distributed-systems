@@ -106,7 +106,7 @@ bool BasePeer::Listen(int max_connections)
     return true;
 }
 
-bool BasePeer::Connect(string remote_address, short port)
+SOCKET BasePeer::Connect(string remote_address, short port)
 {
     is_listening_ = false;
 
@@ -119,10 +119,10 @@ bool BasePeer::Connect(string remote_address, short port)
     {
         PrintError("Connection Failed");
         exit(EXIT_FAILURE);
-        return false;
+        return -1;
     }
     on_connect_callback(socket_handle_);
-    return true;
+    return socket_handle_;
 }
 
 int BasePeer::Send(SOCKET handle, BUFFER buffer, int length)

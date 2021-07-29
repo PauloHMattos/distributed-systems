@@ -20,7 +20,7 @@ bool Server::Start()
 
 void Server::Loop()
 {
-    while(true)
+    while (true)
     {
         cout << "Loop" << endl;
         peer_->Update();
@@ -28,8 +28,13 @@ void Server::Loop()
 }
 
 void Server::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
-                            void (*on_connect)(SOCKET handle),
-                            void (*on_disconnect)(SOCKET handle))
+                          void (*on_connect)(SOCKET handle),
+                          void (*on_disconnect)(SOCKET handle))
 {
     peer_->SetCallbacks(on_recv, on_connect, on_disconnect);
+}
+
+void Server::Send(SOCKET handle, BufferWriter writer)
+{
+    peer_->Send(handle, (BUFFER)writer.getBuffer(), writer.getPosition());
 }

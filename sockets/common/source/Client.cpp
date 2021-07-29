@@ -12,7 +12,8 @@ Client::~Client()
 
 bool Client::Connect(string address)
 {
-    return peer_->Connect(address, port_);
+    socket_handle_ = peer_->Connect(address, port_);
+    return socket_handle_ > 0;
 }
 
 void Client::Loop()
@@ -28,4 +29,9 @@ void Client::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int leng
                             void (*on_disconnect)(SOCKET handle))
 {
     peer_->SetCallbacks(on_recv, on_connect, on_disconnect);
+}
+
+void Client::Send(BufferWriter writer)
+{
+    peer_->Send(socket_handle_, (BUFFER)writer.getBuffer(), writer.getPosition());
 }
