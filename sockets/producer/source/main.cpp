@@ -16,7 +16,8 @@ void OnConnected(SOCKET client_handle);
 void OnDisconnected(SOCKET client_handle);
 
 int main(void)
-{    
+{
+    writer.SetBuffer(buffer, BUFFER_LENGTH);
     client.SetCallbacks(&OnRecvFromServer, &OnConnected, &OnDisconnected);
 
     if (!client.Connect("127.0.0.1"))
