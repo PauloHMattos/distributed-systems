@@ -11,6 +11,7 @@ class BasePeer
 public:
     BasePeer(int input_buffer_size);
     ~BasePeer();
+    SOCKET getPeerSocket();
 
     void InitializeSocket();
     int GetLastErrorCode();

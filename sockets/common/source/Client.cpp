@@ -33,5 +33,5 @@ void Client::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int leng
 
 void Client::Send(BufferWriter writer)
 {
-    peer_->Send(socket_handle_, (BUFFER)writer.getBuffer(), writer.getPosition());
+    peer_->Send(peer_->getPeerSocket(), (BUFFER)writer.getBuffer(), writer.getPosition());
 }

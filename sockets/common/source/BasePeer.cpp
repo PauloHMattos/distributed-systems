@@ -17,6 +17,11 @@ BasePeer::~BasePeer()
 #endif
 }
 
+SOCKET BasePeer::getPeerSocket()
+{
+    return socket_handle_;
+}
+
 void BasePeer::InitializeSocket()
 {
 #if _WIN32
