@@ -4,12 +4,7 @@
 using namespace std;
 
 int main(void) {
-    Server server(7000, 1, 100);
+    Server server(7777, 1, 100);
     server.Start();
-
-    while(true)
-    {
-        cout << "Loop" << endl;
-        server.Loop();
-    }
+    server.Loop();
 }

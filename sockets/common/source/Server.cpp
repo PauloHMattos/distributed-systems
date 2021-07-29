@@ -1,4 +1,5 @@
 #include "Server.h"
+#include <iostream>
 
 Server::Server(short port, int max_connections, int input_buffer_size)
 {
@@ -21,6 +22,7 @@ void Server::Loop()
 {
     while(true)
     {
+        cout << "Loop" << endl;
         peer_->Update();
     }
 }

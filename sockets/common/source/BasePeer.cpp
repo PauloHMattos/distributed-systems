@@ -4,6 +4,7 @@ BasePeer::BasePeer(int input_buffer_size) :
     input_buffer_size_(input_buffer_size)
 {
     input_buffer_ = (BUFFER)malloc(input_buffer_size);
+    InitializeSocket();
 }
 
 BasePeer::~BasePeer()
@@ -73,6 +74,8 @@ int BasePeer::GetLastErrorCode()
 
 bool BasePeer::Bind(short port)
 {
+    memset(&socketAddr_, 0, sizeof(socketAddr_));
+    socketAddr_.sin_addr.s_addr = htons(INADDR_ANY);
     socketAddr_.sin_port = htons(port);
     socketAddr_.sin_family = AF_INET;
     if (bind(socket_handle_, (struct sockaddr *)&socketAddr_, sizeof(socketAddr_)) < 0)
@@ -97,6 +100,7 @@ bool BasePeer::Listen(int max_connections)
     FD_ZERO(&main_fds_); // clear the main and temp sets
     FD_ZERO(&read_fds_);
     // main_fds_ = {0};
+    FD_SET(socket_handle_, &main_fds_);
     // FD_SET(socket_handle_, &main_fds_); //insert the master socket file-descriptor into the master fd-set
     max_fds_ = socket_handle_; //set the current known maximum file descriptor count
     is_listening_ = true;
