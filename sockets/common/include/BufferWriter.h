@@ -6,9 +6,11 @@
 class BufferWriter
 {
 public:
-    BufferWriter(unsigned char* buffer, int length);
+    BufferWriter();
+    void SetBuffer(unsigned char* buffer, int length);
+    void Reset();
     int getPosition();
-
+    unsigned char* getBuffer();
     void WriteInt32(int32_t value);
     void WriteBoolean(bool value);
 

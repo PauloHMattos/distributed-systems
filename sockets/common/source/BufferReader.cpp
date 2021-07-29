@@ -1,10 +1,14 @@
 #include "BufferReader.h"
 
-BufferReader::BufferReader(unsigned char *buffer, int length) :
-    position_(0),
-    buffer_(buffer),
-    buffer_length_(length)
+BufferReader::BufferReader()
 {
+}
+
+void BufferReader::SetBuffer(unsigned char *buffer, int length)
+{
+    position_ = 0;
+    buffer_ = buffer;
+    buffer_length_ = length;
 }
 
 int BufferReader::getPosition()

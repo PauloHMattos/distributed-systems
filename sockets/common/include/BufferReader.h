@@ -6,7 +6,8 @@
 class BufferReader
 {
 public:
-    BufferReader(unsigned char* buffer, int length);
+    BufferReader();
+    void SetBuffer(unsigned char* buffer, int length);
     int getPosition();
 
     int32_t ReadInt32();
