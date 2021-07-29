@@ -43,6 +43,9 @@
             "problemMatcher": [
                 "$gcc"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
             "windows": {
                 "command": "powershell",
                 "args": [
@@ -68,6 +71,9 @@
         {
             "label": "clean",
             "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
             "windows": {
                 "command": "powershell",
                 "args": [
