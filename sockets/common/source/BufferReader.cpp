@@ -1,31 +1,30 @@
 #include "BufferReader.h"
+#include "Defines.h"
 
 BufferReader::BufferReader()
 {
 }
 
-void BufferReader::SetBuffer(unsigned char *buffer, int length)
-{
-    position_ = 0;
-    buffer_ = buffer;
-    buffer_length_ = length;
-}
-
-int BufferReader::getPosition()
-{
-    return position_;
-}
-
 int32_t BufferReader::ReadInt32()
 {
+    int len = sizeof(int32_t);
+    EnsureCapacity(len);
+
     int32_t value;
-    memcpy(&value, &buffer_[position_], sizeof(int32_t));
+    memcpy(&value, buffer_ + position_, len);
+    position_ += len;
     return (int32_t)ntohl(value);
 }
 
 bool BufferReader::ReadBoolean()
 {
-    bool value;
-    memcpy(&value, &buffer_[position_++], sizeof(bool));
-    return value;
+    EnsureCapacity(1);
+
+    unsigned char value = buffer_[position_];
+    position_++;
+    if (value == 0)
+    {
+        return false;
+    }
+    return true;
 }
