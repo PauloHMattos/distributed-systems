@@ -5,12 +5,11 @@ using namespace std;
 
 int main(void)
 {    
-    Client client(100);
-    if (!client.Connect("127.0.0.1", "7000"))
+    Client client(7000, 100);
+    if (!client.Connect("127.0.0.1"))
     {
         exit(EXIT_FAILURE);
     }
-
     while(true)
     {
         cout << "Loop" << endl;

@@ -5,6 +5,10 @@
         "path": "."
       },
       {
+        "name": "Sockets Wrapper",
+        "path": "common"
+      },
+      {
         "name": "Consumer",
         "path": "consumer"
       },
@@ -61,7 +65,8 @@
         "sstream": "cpp",
         "stdexcept": "cpp",
         "streambuf": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "cstring": "cpp"
       }
     }
   }
