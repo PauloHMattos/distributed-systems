@@ -244,8 +244,8 @@ void BasePeer::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int le
                             void (*on_disconnect)(SOCKET handle))
 {
     on_recv_callback = on_recv;
-    on_disconnect_callback = on_connect;
-    on_connect_callback = on_disconnect;
+    on_connect_callback = on_connect;
+    on_disconnect_callback = on_disconnect;
 }
 
 void BasePeer::PrintError(const char *pcMessagePrefix)
