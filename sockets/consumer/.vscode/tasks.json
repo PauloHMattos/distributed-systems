@@ -7,6 +7,9 @@
             "problemMatcher": [
                 "$gcc"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
             "group": {
                 "kind": "build",
                 "isDefault": true
@@ -32,6 +35,7 @@
                     "make"
                 ]
             },
+            
         },
         {
             "label": "build & run",
@@ -39,6 +43,9 @@
             "problemMatcher": [
                 "$gcc"
             ],
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
             "windows": {
                 "command": "powershell",
                 "args": [
@@ -64,6 +71,9 @@
         {
             "label": "clean",
             "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/build"
+            },
             "windows": {
                 "command": "powershell",
                 "args": [

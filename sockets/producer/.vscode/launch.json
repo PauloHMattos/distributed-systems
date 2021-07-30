@@ -13,17 +13,17 @@
             "linux": {
                 "MIMode": "gdb",
                 "miDebuggerPath": "gdb",
-                "program": "${workspaceFolder}/output/main"
+                "program": "${workspaceFolder}/bin/producer"
             },
             "osx": {
                 "MIMode": "lldb",
                 "miDebuggerPath": "lldb-mi",
-                "program": "${workspaceFolder}/output/main"
+                "program": "${workspaceFolder}/bin/producer"
             },
             "windows": {
                 "MIMode": "gdb",
                 "miDebuggerPath": "gdb.exe",
-                "program": "${workspaceFolder}/output/main.exe"
+                "program": "${workspaceFolder}/bin/producer.exe"
             },
             "preLaunchTask": "${defaultBuildTask}",
             "setupCommands": [
