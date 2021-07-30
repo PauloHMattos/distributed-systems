@@ -16,6 +16,11 @@ bool Client::Connect(string address)
     return socket_handle_ > 0;
 }
 
+void Client::Disconnect()
+{
+    peer_->Close(peer_->getPeerSocket());
+}
+
 bool Client::Update()
 {
     return peer_->Update();

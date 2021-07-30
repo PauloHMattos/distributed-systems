@@ -23,6 +23,11 @@ bool Server::Update()
     return peer_->Update();
 }
 
+void Server::Stop()
+{
+    peer_->Close(peer_->getPeerSocket());
+}
+
 void Server::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
                           void (*on_connect)(SOCKET handle),
                           void (*on_disconnect)(SOCKET handle))
