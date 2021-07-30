@@ -16,6 +16,7 @@ void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length);
 void OnConnected(SOCKET client_handle);
 void OnDisconnected(SOCKET client_handle);
 
+int testingNumber = 1;
 int generateRandomNumber();
 
 int main(int argc, char *argv[])
@@ -47,7 +48,7 @@ int main(int argc, char *argv[])
         writer.Reset();
         writer.WriteInt32(n);
         client.Send(writer);
-
+        testingNumber = n;
         n += generateRandomNumber();
         count--;
     } while(count >= 0 && client.Update());
@@ -58,6 +59,7 @@ void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length)
 {
     reader.SetBuffer((unsigned char *)buffer, length);
     bool isPrime = reader.ReadBoolean();
+    cout << testingNumber << ": ";
     if (isPrime)
     {
         cout << "Prime" << endl;
