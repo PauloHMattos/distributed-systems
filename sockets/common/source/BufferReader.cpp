@@ -1,5 +1,6 @@
 #include "BufferReader.h"
 #include "Defines.h"
+#include <cstring>
 
 BufferReader::BufferReader()
 {

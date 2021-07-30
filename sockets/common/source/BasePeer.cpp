@@ -1,5 +1,6 @@
 #include "BasePeer.h"
 #include <iostream>
+#include <cstring>
 
 BasePeer::BasePeer(int input_buffer_size) : input_buffer_size_(input_buffer_size)
 {
@@ -60,7 +61,7 @@ void BasePeer::Close(SOCKET handle)
 #if _WIN32
     closesocket(handle);
 #else
-    close(handle);
+    shutdown(handle, 2);
 #endif
     if (is_listening_)
     {

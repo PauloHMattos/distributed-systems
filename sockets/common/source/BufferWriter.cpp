@@ -1,5 +1,6 @@
 #include "BufferWriter.h"
 #include "Defines.h"
+#include <cstring>
 
 BufferWriter::BufferWriter()
 {
