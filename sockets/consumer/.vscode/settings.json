@@ -54,5 +54,6 @@
         "ranges": "cpp",
         "concepts": "cpp",
         "iomanip": "cpp"
-    }
+    },
+    "cmake.configureOnOpen": true
 }
