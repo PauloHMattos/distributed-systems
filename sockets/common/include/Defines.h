@@ -10,4 +10,7 @@ typedef char* BUFFER;
 #include <arpa/inet.h>
 typedef int SOCKET;
 typedef void* BUFFER;
+#ifdef __APPLE__
+#include <sys/select.h>
+#endif
 #endif
