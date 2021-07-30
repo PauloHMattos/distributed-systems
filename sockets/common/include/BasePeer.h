@@ -21,11 +21,11 @@ public:
     bool Listen(int max_connections);
     SOCKET Connect(string remote_address, short port);
 
-    int Send(SOCKET handle, BUFFER buffer, int length);
+    int Send(SOCKET handle, unsigned char* buffer, int length);
 
     bool Update();
 
-    void SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+    void SetCallbacks(void (*on_recv)(SOCKET handle, unsigned char* buffer, int length),
                       void(*on_connect)(SOCKET handle),
                       void(*on_disconnect)(SOCKET handle));
 
@@ -36,7 +36,7 @@ private:
     struct sockaddr_in socketAddr_;
 
     int input_buffer_size_;
-    BUFFER input_buffer_;
+    unsigned char* input_buffer_;
 
     bool is_listening_;
     
@@ -48,7 +48,7 @@ private:
 
     
     void (*on_connect_callback) (SOCKET fd);
-    void (*on_recv_callback) (SOCKET fd, BUFFER buffer, int length);
+    void (*on_recv_callback) (SOCKET fd, unsigned char* buffer, int length);
     void (*on_disconnect_callback) (SOCKET fd);
 
     int Poll();

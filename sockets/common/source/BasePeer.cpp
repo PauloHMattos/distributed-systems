@@ -4,7 +4,7 @@
 
 BasePeer::BasePeer(int input_buffer_size) : input_buffer_size_(input_buffer_size)
 {
-    input_buffer_ = (BUFFER)malloc(input_buffer_size);
+    input_buffer_ = (unsigned char*)malloc(input_buffer_size);
     InitializeSocket();
 }
 
@@ -131,14 +131,14 @@ SOCKET BasePeer::Connect(string remote_address, short port)
     return socket_handle_;
 }
 
-int BasePeer::Send(SOCKET handle, BUFFER buffer, int length)
+int BasePeer::Send(SOCKET handle, unsigned char* buffer, int length)
 {
     int total = 0;           // how many bytes we've sent
     int bytes_left = length; // how many we have left to send
 
     while (total < length)
     {
-        int n = send(handle, buffer + total, bytes_left, 0);
+        int n = send(handle, (BUFFER)(buffer + total), bytes_left, 0);
         if (n == -1)
         {
             PrintError("send() failed");
@@ -244,7 +244,7 @@ void BasePeer::HandleNewConnection()
     on_connect_callback(new_connection_fd);
 }
 
-void BasePeer::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+void BasePeer::SetCallbacks(void (*on_recv)(SOCKET handle, unsigned char* buffer, int length),
                             void (*on_connect)(SOCKET handle),
                             void (*on_disconnect)(SOCKET handle))
 {

@@ -12,7 +12,7 @@ BufferWriter writer;
 BufferReader reader;
 
 Server server(7000, 1, 100);
-void OnRecvFromClient(SOCKET client_handle, BUFFER buffer, int length);
+void OnRecvFromClient(SOCKET client_handle, unsigned char* buffer, int length);
 void OnClientConnected(SOCKET client_handle);
 void OnClientDisconnected(SOCKET client_handle);
 
@@ -30,7 +30,7 @@ int main(void)
     }
 }
 
-void OnRecvFromClient(SOCKET client_handle, BUFFER buffer, int length)
+void OnRecvFromClient(SOCKET client_handle, unsigned char* buffer, int length)
 {
     reader.SetBuffer((unsigned char *)buffer, length);
     int32_t value = reader.ReadInt32();

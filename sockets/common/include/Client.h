@@ -12,7 +12,7 @@ public:
     void Disconnect();
     bool Update();
 
-    void SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+    void SetCallbacks(void (*on_recv)(SOCKET handle, unsigned char* buffer, int length),
                       void(*on_connect)(SOCKET handle),
                       void(*on_disconnect)(SOCKET handle));
            

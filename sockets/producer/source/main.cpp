@@ -12,7 +12,7 @@ BufferWriter writer;
 BufferReader reader;
 
 Client client(7000, 100);
-void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length);
+void OnRecvFromServer(SOCKET client_handle, unsigned char* buffer, int length);
 void OnConnected(SOCKET client_handle);
 void OnDisconnected(SOCKET client_handle);
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[])
     client.Disconnect();
 }
 
-void OnRecvFromServer(SOCKET client_handle, BUFFER buffer, int length)
+void OnRecvFromServer(SOCKET client_handle, unsigned char* buffer, int length)
 {
     reader.SetBuffer((unsigned char *)buffer, length);
     bool isPrime = reader.ReadBoolean();

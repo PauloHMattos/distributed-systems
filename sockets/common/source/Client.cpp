@@ -26,7 +26,7 @@ bool Client::Update()
     return peer_->Update();
 }
 
-void Client::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+void Client::SetCallbacks(void (*on_recv)(SOCKET handle, unsigned char* buffer, int length),
                             void (*on_connect)(SOCKET handle),
                             void (*on_disconnect)(SOCKET handle))
 {
@@ -35,5 +35,5 @@ void Client::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int leng
 
 void Client::Send(BufferWriter writer)
 {
-    peer_->Send(peer_->getPeerSocket(), (BUFFER)writer.getBuffer(), writer.getPosition());
+    peer_->Send(peer_->getPeerSocket(), writer.getBuffer(), writer.getPosition());
 }

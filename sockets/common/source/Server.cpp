@@ -28,7 +28,7 @@ void Server::Stop()
     peer_->Close(peer_->getPeerSocket());
 }
 
-void Server::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int length),
+void Server::SetCallbacks(void (*on_recv)(SOCKET handle, unsigned char* buffer, int length),
                           void (*on_connect)(SOCKET handle),
                           void (*on_disconnect)(SOCKET handle))
 {
@@ -37,5 +37,5 @@ void Server::SetCallbacks(void (*on_recv)(SOCKET handle, BUFFER buffer, int leng
 
 void Server::Send(SOCKET handle, BufferWriter writer)
 {
-    peer_->Send(handle, (BUFFER)writer.getBuffer(), writer.getPosition());
+    peer_->Send(handle, writer.getBuffer(), writer.getPosition());
 }
