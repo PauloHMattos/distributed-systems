@@ -20,6 +20,7 @@ void registerSignals()
 
 int listenForSignals(int execution_mode)
 {
+    cout << "This process ID is: " << getpid() << "\n";
     cout << "Listening for signals SIGINT, SIGUSR1 and SIGUSR2...\n";
 
     while (1) {
@@ -30,6 +31,7 @@ int listenForSignals(int execution_mode)
         while (received_signum != 0) {
 
             if (received_signum == SIGINT) {
+                cout << "Received signal: " << received_signum << "\n";
                 cout << "Stopping execution...\n";
 
                 return 0;
