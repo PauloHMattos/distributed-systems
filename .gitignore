@@ -91,6 +91,8 @@
 **/build/
 include/divisible/*
 
+!pipes/**/Makefile
+!signals/**/Makefile
 
 ## Local 
 
