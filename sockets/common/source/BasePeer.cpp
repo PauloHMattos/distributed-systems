@@ -204,7 +204,7 @@ bool BasePeer::UpdateServer()
 int BasePeer::RecvFromConnection(SOCKET handle)
 {
     int nbytes;
-    if ((nbytes = recv(handle, input_buffer_, input_buffer_size_, 0)) <= 0)
+    if ((nbytes = recv(handle, (BUFFER)input_buffer_, input_buffer_size_, 0)) <= 0)
     {
         // got error or connection closed by client
         if (nbytes == 0)
