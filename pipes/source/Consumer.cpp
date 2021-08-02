@@ -1,9 +1,9 @@
 #include "Consumer.h"
+#include "Utils.h"
 #include <iostream>
 #include <sstream>
 #include <string>
 #include <unistd.h>
-#include <cmath>
 
 using namespace std;
 
@@ -41,40 +41,11 @@ void Consumer::printStatus(int received_number)
     cout << "*** Consumer ***\n";
     cout << "Received number " << received_number << ", which ";
 
-    if (isPrime(received_number)) {
+    if (Utils::isPrime(received_number)) {
         cout << "is prime.\n\n";
 
         return;
     }
 
     cout << "is not prime.\n\n";
-}
-
-bool Consumer::isPrime(int n)
-{
-    if (n <= 1)
-    {
-        return false;
-    }
-    if (n <= 3)
-    {
-        return true;
-    }
-
-    // This is checked so that we can skip
-    // middle five numbers in below loop
-    if (n % 2 == 0 || n % 3 == 0)
-    {
-        return false;
-    }
-
-    int sqrtN = std::sqrt(n);
-    for (int i = 5; i <= sqrtN; i += 6)
-    {
-        if (n % i == 0 || n % (i + 2) == 0)
-        {
-            return false;
-        }
-    }
-    return true;
 }

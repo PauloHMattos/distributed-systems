@@ -1,7 +1,7 @@
 #include "Producer.h"
+#include "Utils.h"
 #include <unistd.h>
 #include <iostream>
-#include <random>
 #include <string>
 
 using namespace std;
@@ -19,7 +19,7 @@ int Producer::produceRandomNumbers()
     int number_to_be_sent = 1;
 
     for (int i = 0; i < number_of_numbers_; i++) {
-        number_to_be_sent = number_to_be_sent + generateRandomNumber();
+        number_to_be_sent = number_to_be_sent + Utils::generateRandomNumber();
         string value_to_be_sent = to_string(number_to_be_sent);
 
         cout << "*** Producer ***\n";
@@ -31,15 +31,6 @@ int Producer::produceRandomNumbers()
     }
 
     terminateProduction();
-}
-
-int Producer::generateRandomNumber()
-{
-    static std::random_device rd; // obtain a random number from hardware
-    static std::mt19937 gen(rd()); // seed the generator
-    static std::uniform_int_distribution<> distr(1, 100); // define the range
-
-    return distr(gen);
 }
 
 void Producer::writeToPipe(string value)
