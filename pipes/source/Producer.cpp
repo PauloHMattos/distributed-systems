@@ -30,7 +30,7 @@ int Producer::produceRandomNumbers()
         sleep(1);
     }
 
-    terminateProduction();
+    return terminateProduction();
 }
 
 void Producer::writeToPipe(string value)
@@ -41,7 +41,7 @@ void Producer::writeToPipe(string value)
 int Producer::terminateProduction()
 {
     cout << "*** Producer ***\n";
-    cout << "End of numbers generation." << endl;
+    cout << "End of numbers generation.\n" << endl;
     
     string value_to_be_sent = "0";
     
