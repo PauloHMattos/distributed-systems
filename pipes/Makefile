@@ -18,10 +18,10 @@ LFLAGS =
 OUTPUT	:= output
 
 # define source directory
-SRC		:= source
+SRC		:= source ../common/source
 
 # define include directory
-INCLUDE	:= include
+INCLUDE	:= include ../common/include
 
 # define lib directory
 LIB		:= lib

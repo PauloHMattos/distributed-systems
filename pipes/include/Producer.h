@@ -14,7 +14,6 @@ private:
     int number_of_numbers_;
     int *pipe_fd_;
 
-    int generateRandomNumber();
     void writeToPipe(string value);
     int terminateProduction();
 };

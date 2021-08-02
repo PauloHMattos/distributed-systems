@@ -7,8 +7,11 @@ using namespace std;
 
 int main(void)
 {
-    int number_of_numbers = 2;
+    int number_of_numbers;
     int pipe_fd[2];
+
+    cout << "Please type in the number of random numbers to be generated:\n";
+    cin >> number_of_numbers;
 
     if (pipe(pipe_fd) < 0)
     {
