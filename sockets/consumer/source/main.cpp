@@ -1,5 +1,6 @@
 #include <iostream>
 #include <cmath>
+#include "Utils.h"
 #include "Server.h"
 #include "BufferWriter.h"
 #include "BufferReader.h"
@@ -15,8 +16,6 @@ Server server(7000, 1, 100);
 void OnRecvFromClient(SOCKET client_handle, unsigned char* buffer, int length);
 void OnClientConnected(SOCKET client_handle);
 void OnClientDisconnected(SOCKET client_handle);
-
-bool isPrime(int n);
 
 int main(void)
 {
@@ -40,7 +39,7 @@ void OnRecvFromClient(SOCKET client_handle, unsigned char* buffer, int length)
         server.Stop();
         exit(EXIT_SUCCESS);
     }
-    bool result = isPrime(value);
+    bool result = Utils::isPrime(value);
     writer.Reset();
     writer.WriteBoolean(result);
     server.Send(client_handle, writer);
@@ -54,33 +53,4 @@ void OnClientConnected(SOCKET client_handle)
 void OnClientDisconnected(SOCKET client_handle)
 {
     cout << "Client disconnected: " << client_handle << endl;
-}
-
-bool isPrime(int n)
-{
-    if (n <= 1)
-    {
-        return false;
-    }
-    if (n <= 3)
-    {
-        return true;
-    }
-
-    // This is checked so that we can skip
-    // middle five numbers in below loop
-    if (n % 2 == 0 || n % 3 == 0)
-    {
-        return false;
-    }
-
-    int sqrtN = std::sqrt(n);
-    for (int i = 5; i <= sqrtN; i += 6)
-    {
-        if (n % i == 0 || n % (i + 2) == 0)
-        {
-            return false;
-        }
-    }
-    return true;
 }

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <random>
+#include "Utils.h"
 #include "Client.h"
 #include "BufferWriter.h"
 #include "BufferReader.h"
@@ -17,7 +18,6 @@ void OnConnected(SOCKET client_handle);
 void OnDisconnected(SOCKET client_handle);
 
 int testingNumber = 1;
-int generateRandomNumber();
 
 int main(int argc, char *argv[])
 {
@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
         writer.WriteInt32(n);
         client.Send(writer);
         testingNumber = n;
-        n += generateRandomNumber();
+        n += Utils::generateRandomNumber();
         count--;
     } while(count >= 0 && client.Update());
     client.Disconnect();
@@ -78,13 +78,4 @@ void OnConnected(SOCKET client_handle)
 void OnDisconnected(SOCKET client_handle)
 {
     cout << "Disconnected from server" << endl;
-}
-
-int generateRandomNumber()
-{
-    static std::random_device rd; // obtain a random number from hardware
-    static std::mt19937 gen(rd()); // seed the generator
-    static std::uniform_int_distribution<> distr(1, 100); // define the range
-
-    return distr(gen);
 }
