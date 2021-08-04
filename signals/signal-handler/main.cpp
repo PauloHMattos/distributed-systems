@@ -24,12 +24,13 @@ int listenForSignals(int execution_mode)
     cout << "Listening for signals SIGINT, SIGUSR1 and SIGUSR2...\n";
 
     while (1) {
+        // Move program to wait state in case the user
+        // has selected blocking wait mode.
         if (execution_mode == 2) {
             pause();
         }
 
         while (received_signum != 0) {
-
             if (received_signum == SIGINT) {
                 cout << "Received signal: " << received_signum << "\n";
                 cout << "Stopping execution...\n";
