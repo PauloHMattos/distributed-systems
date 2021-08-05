@@ -7,6 +7,11 @@
 
 using namespace std;
 
+// Consumer class, which encapsulates the functionalities
+// for a consumer, such as watching the pipe and printing
+// the read values.
+// The constructor receives an array of references to the
+// pipe file descriptor.
 Consumer::Consumer(int (&pipe_fd)[2])
 {
     pipe_fd_ = pipe_fd;
@@ -16,9 +21,12 @@ int Consumer::watchPipe()
 {
     char buffer[20];
 
+    // Closes the writing edge of the pipe.
     close(*(pipe_fd_ + 1));
 
     while (1) {
+        // Reads pipe file descriptor reading edge, saving
+        // its contents to the buffer.
         read(*pipe_fd_, &buffer, 21);
         const string received_char = buffer;
         int received_number = stoi(received_char);

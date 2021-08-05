@@ -1,6 +1,11 @@
 #include "SignalFirer.h"
 #include <signal.h>
 
+// SinalFirer class, which encapsulates the functionalities
+// for a signal firer, such as checking the existence of the
+// process to be signaled and sending signals.
+// The constructor receives the process to be signaled as an
+// argument.
 SignalFirer::SignalFirer(int process_number)
 {
     if (!processExists(process_number)) {

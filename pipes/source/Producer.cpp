@@ -6,6 +6,11 @@
 
 using namespace std;
 
+// Producer class which encapsulates the functionalities
+// of a producer, such as produce random numbers and write
+// to the pipe.
+// The constructor receives an array of references to the
+// pipe file descriptor.
 Producer::Producer(int (&pipe_fd)[2], int number_of_numbers)
 {
     pipe_fd_ = pipe_fd;
@@ -14,8 +19,10 @@ Producer::Producer(int (&pipe_fd)[2], int number_of_numbers)
 
 int Producer::produceRandomNumbers()
 {
+    // Closes the reading edge of the pipe.
     close(*pipe_fd_);
 
+    // Starts with N0 = 1.
     int number_to_be_sent = 1;
 
     for (int i = 0; i < number_of_numbers_; i++) {
@@ -35,6 +42,8 @@ int Producer::produceRandomNumbers()
 
 void Producer::writeToPipe(string value)
 {
+    // Writes writing edge, which requires the C++ string
+    // to be converted to a C string.
     write(*(pipe_fd_ + 1), value.c_str(), 21);
 }
 
