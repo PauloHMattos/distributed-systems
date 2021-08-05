@@ -9,3 +9,12 @@ Enter either the `signals` or `pipes` folder and run the following command:
 ```
 make run
 ```
+
+
+### Sockets
+To build this project is required [CMake](https://cmake.org/). Open the `sockets/producer/build` or `sockets/consumer/build` folders, and run:
+``` shell
+cmake ..
+make
+```
+The built application will be available in the path `sockets/[producer/consumer]/bin`
