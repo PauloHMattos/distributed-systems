@@ -12,9 +12,11 @@ make run
 
 
 ### Sockets
-To build this project is required [CMake](https://cmake.org/). Open the `sockets/producer/build` or `sockets/consumer/build` folders, and run:
+To build this project is required [CMake](https://cmake.org/). Open the `sockets/producer/` or `sockets/consumer/` folders, and run:
 ``` shell
-cmake ..
-make
+$ mkdir build
+$ cd build
+build $ cmake ..
+build $ make
 ```
 The built application will be available in the path `sockets/[producer/consumer]/bin`
