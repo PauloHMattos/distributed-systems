@@ -37,14 +37,12 @@ namespace tp2
             var numberOfThreads = 32; //Int32.Parse(args[0]);
             long vectorLength = 1_000_000_000; //Int32.Parse(args[1]);
 
-            // TODO: Allow lengths greater than int.MaxValue
             var threads = new Thread[numberOfThreads];
             elements = new char[vectorLength];
 
             InitializeRandomVector(elements, vectorLength);
             InitializeThreadsVector(threads, vectorLength);
 
-            //Thread.Sleep(5000);
             foreach(var t in threads)
             {
                 t.Join();
@@ -58,12 +56,9 @@ namespace tp2
         {
             var rnd = new Random();
 
-            fixed(char* p = &elements[0])
+            for (var i = 0; i < length; i++)
             {
-                for (var i = 0; i < length; i++)
-                {
-                    *(p + i) = (char)1; //(char)rnd.Next(-100, 101);
-                }
+                elements[i] = (char)1; //(char)rnd.Next(-100, 101);
             }
         }
 
@@ -98,14 +93,11 @@ namespace tp2
         static void ThreadMethod(long start, long end)
         {
             var localSum = 0; //sum;
-            fixed(char* p = &elements[0])
+            for (var i = start; i < end; i++)
             {
-                for (var i = start; i < end; i++)
-                {
-                    localSum += *(p + i);
-                }
+                localSum += elements[i];
             }
-
+            
             // Lock
             myLock.Acquire();
             sum += localSum;
