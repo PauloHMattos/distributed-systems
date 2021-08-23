@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading;
 
 namespace tp2
@@ -12,38 +13,51 @@ namespace tp2
         static void Main(string[] args)
         {
             myLock = new SpinLock();
-            var numberOfThreads = 32; //Int32.Parse(args[0]);
-            long vectorLength = 1_000_000_000; //Int32.Parse(args[1]);
-
-            var threads = new Thread[numberOfThreads];
+            var numberOfThreads = Int32.Parse(args[0]);
+            var vectorLength = Int32.Parse(args[1]);
             elements = new char[vectorLength];
 
-            InitializeRandomVector(elements, vectorLength);
-            InitializeThreadsVector(threads, vectorLength);
+            var sum = 0;
+            for (var i = 0; i < 10; i++)
+            {
+                sum += RunCaseStudy(numberOfThreads);
+            }
+            Console.Write($"{sum / (float)10}");
+        }
 
+        private static int RunCaseStudy(int numberOfThreads)
+        {
+            InitializeRandomVector(elements);
+            var threads = new Thread[numberOfThreads];
+            InitializeThreadsVector(threads);
+
+            var watch = new Stopwatch();
+            watch.Start();
+            foreach(var t in threads)
+            {
+                t.Start();
+            }
             foreach(var t in threads)
             {
                 t.Join();
             }
-
-            Console.WriteLine("Hello World!");
-            Console.WriteLine($"Resultado = {sum}");
+            watch.Stop();
+            return watch.Elapsed.Milliseconds;
         }
 
-        static void InitializeRandomVector(char[] vector, long length)
+        static void InitializeRandomVector(char[] vector)
         {
             var rnd = new Random();
-
-            for (var i = 0; i < length; i++)
+            for (var i = 0; i < vector.Length; i++)
             {
-                elements[i] = (char)1; //(char)rnd.Next(-100, 101);
+                elements[i] = (char)rnd.Next(-100, 101);
             }
         }
 
-        static void InitializeThreadsVector(Thread[] vector, long numberOfElements)
+        static void InitializeThreadsVector(Thread[] vector)
         {
-            var countPerThread = numberOfElements / vector.Length;
-            var start = 0L;
+            var countPerThread = elements.Length / vector.Length;
+            var start = 0;
             var end = countPerThread;
             for (int i = 0; i < vector.Length - 1; i++)
             {
@@ -58,17 +72,12 @@ namespace tp2
             }
             vector[^1] = new Thread(() => 
             {
-                ThreadMethod(start, numberOfElements);
+                ThreadMethod(start, elements.Length);
             });
             vector[^1].IsBackground = true;
-
-            for (int i = 0; i < vector.Length; i++)
-            {
-                vector[i].Start();
-            }
         }
 
-        static void ThreadMethod(long start, long end)
+        static void ThreadMethod(int start, int end)
         {
             var localSum = 0; //sum;
             for (var i = start; i < end; i++)
