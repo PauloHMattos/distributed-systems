@@ -39,9 +39,9 @@ namespace tp2
                 t.Start();
             }
             
-            while (finishedThreads < threads.Length)
+            foreach(var t in threads)
             {
-
+                t.Join();
             }
             
             watch.Stop();
