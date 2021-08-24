@@ -6,7 +6,8 @@ namespace tp2
 {
     unsafe class Program
     {
-        static volatile int sum;
+        static int sum;
+        static int finishedThreads;
         static char[] elements;
         static SpinLock myLock;
 
@@ -37,11 +38,13 @@ namespace tp2
             {
                 t.Start();
             }
-            foreach(var t in threads)
+            
+            while (finishedThreads < threads.Length)
             {
-                t.Join();
+
             }
             watch.Stop();
+            
             return watch.Elapsed.Milliseconds;
         }
 
@@ -65,7 +68,6 @@ namespace tp2
                 {
                     ThreadMethod(start, end);
                 });
-                vector[i].IsBackground = true;
 
                 start = end;
                 end += countPerThread;
@@ -74,7 +76,6 @@ namespace tp2
             {
                 ThreadMethod(start, elements.Length);
             });
-            vector[^1].IsBackground = true;
         }
 
         static void ThreadMethod(int start, int end)
@@ -88,6 +89,7 @@ namespace tp2
             // Lock
             myLock.Acquire();
             sum += localSum;
+            finishedThreads += 1;
             myLock.Release();
         }
     }
