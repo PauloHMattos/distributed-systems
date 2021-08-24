@@ -6,20 +6,24 @@ namespace producer_consumer
     class Program
     {
         static int[] buffer;
+        static int consumedNumbers = 0;
         static Semaphore mutex;
         static Semaphore empty;
         static Semaphore full;
 
         static void Main(string[] args)
         {
-            int nProducers = 1;
-            int nConsumers = 16;
-            int bufferSize = 16;
+            int nProducers = Int32.Parse(args[0]);
+            int nConsumers = Int32.Parse(args[1]);
+            int bufferSize = Int32.Parse(args[2]);
 
             empty = new Semaphore(bufferSize, bufferSize);
             full = new Semaphore(0, bufferSize);
             mutex = new Semaphore(1, 1);
             buffer = new int[bufferSize];
+
+            var watch = new System.Diagnostics.Stopwatch();
+            watch.Start();
 
             var producers = new Thread[nProducers];
             InitializeProducers(producers);
@@ -31,7 +35,11 @@ namespace producer_consumer
             {
                 t.Join();
             }
-            Console.WriteLine("Hello World!");
+
+            watch.Stop();
+            Console.WriteLine($"{watch.ElapsedMilliseconds}");
+
+            Environment.Exit(0);
         }
 
         static void InitializeProducers(Thread[] producers)
@@ -79,9 +87,7 @@ namespace producer_consumer
 
         static void StartConsumer()
         {
-            int count = 0;
-
-            while (count++ < 1_000)
+            while (consumedNumbers < 100_000)
             {
                 int resource = -1;
 
@@ -100,11 +106,13 @@ namespace producer_consumer
                     break;
                 }
 
+                consumedNumbers++;
+
                 mutex.Release();
                 empty.Release();
 
-                var str = $"{resource} = {IsPrime(resource)}";
-                Console.WriteLine(str);
+                // var str = $"{resource} = {IsPrime(resource)}";
+                // Console.WriteLine(str);
                 // Check prime number
             }
         }
