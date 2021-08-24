@@ -19,6 +19,7 @@ namespace tp2
             elements = new char[vectorLength];
 
             var sum = 0;
+            InitializeRandomVector(elements);
             for (var i = 0; i < 10; i++)
             {
                 sum += RunCaseStudy(numberOfThreads);
@@ -28,7 +29,6 @@ namespace tp2
 
         private static int RunCaseStudy(int numberOfThreads)
         {
-            InitializeRandomVector(elements);
             var threads = new Thread[numberOfThreads];
             InitializeThreadsVector(threads);
 
@@ -43,6 +43,7 @@ namespace tp2
             {
 
             }
+            
             watch.Stop();
             
             return watch.Elapsed.Milliseconds;
