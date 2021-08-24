@@ -3,7 +3,6 @@ import csv
 
 def read_csv(path: str) -> tuple:
     results = {}
-    xticks = set([])
 
     with open(path, 'r') as csv_file:
         dataset = csv.reader(csv_file, delimiter=',')
@@ -16,25 +15,22 @@ def read_csv(path: str) -> tuple:
                 }
                 results[nElements] = graph
 
-            x = int(nThreads.strip())
-            xticks.add(x)
-            results[nElements]["x"].append(x)
+            results[nElements]["x"].append(nThreads.strip())
             results[nElements]["y"].append(float(time.strip()))
 
-    return results, list(xticks)
+    return results
 
 
 
 if __name__ == '__main__':
-    results, xticks = read_csv("data.csv")
+    results = read_csv("data.csv")
 
     fig = plt.figure()
     ax = fig.add_subplot()
     ax.set(xlabel='Threads', ylabel='Tempo (ms)')
 
     ax.yaxis.grid(True, which='both')
-    ax.xaxis.grid(True, which='minor')
-    ax.set_xticks(xticks, minor=True)
+    ax.xaxis.grid(True, which='major')
     
     ax.set_title('Numero de Threads vs Tempo (ms)')
     for key, result in results.items():

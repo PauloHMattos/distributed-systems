@@ -13,10 +13,10 @@ def run():
     with open(output_path, 'w', newline='') as f:
         f.write("# N Elements; N Threads; Time(ms)\n")
         for nElements in elementsCount:
-            for nThreads in threadsCount:
+            for (i, nThreads) in enumerate(threadsCount):
                 print("Elements {} - Threads {}".format(nElements, nThreads))
                 time = run_program(nThreads, nElements)
-                f.write("{}, {}, {}\n".format(nElements, nThreads, time))
+                f.write("{}, 2^{}, {}\n".format(nElements, i, time))
                 f.flush()
 
     
