@@ -28,7 +28,7 @@ def read_csv(path: str) -> tuple:
 if __name__ == '__main__':
     results, xticks = read_csv("data.csv")
 
-    fig = plt.figure(figsize=(12.8, 9.6))
+    fig = plt.figure()
     ax = fig.add_subplot()
     ax.set(xlabel='Threads', ylabel='Tempo (ms)')
 
@@ -41,4 +41,4 @@ if __name__ == '__main__':
         ax.plot(result["x"], result["y"], label = "N = {}".format(key))
 
     ax.legend(loc='best', fontsize='x-large')
-    plt.savefig('foo.png')
+    plt.savefig('output.png')
