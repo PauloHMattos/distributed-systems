@@ -1,4 +1,5 @@
 import subprocess
+import matplotlib.pyplot as plt
 
 def run_program(threads, elements):
     result = subprocess.run(["dotnet", "run", "-c", "Release", str(threads), str(elements)], stdout=subprocess.PIPE)
@@ -10,13 +11,14 @@ def run():
 
     output_path = 'data.csv'
     with open(output_path, 'w', newline='') as f:
-        f.write("# N Threads; N Elements; Time(ms)\n")
-        for nThreads in threadsCount:
-            for nElements in elementsCount:
-                print("Threads {} - Elements {}".format(nThreads, nElements))
+        f.write("# N Elements; N Threads; Time(ms)\n")
+        for nElements in elementsCount:
+            for nThreads in threadsCount:
+                print("Elements {} - Threads {}".format(nElements, nThreads))
                 time = run_program(nThreads, nElements)
-                f.write("{}, {}, {}\n".format(nThreads, nElements, time))
+                f.write("{}, {}, {}\n".format(nElements, nThreads, time))
                 f.flush()
 
+    
 if __name__ == "__main__":
     run()
