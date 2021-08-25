@@ -13,7 +13,7 @@ namespace tp2
 
         public void Acquire()
         {
-            // Interlocked.CompareExchange = Test-and-set
+            // Interlocked.CompareExchange is the .NET equivalent of Test-and-set
             while (Interlocked.CompareExchange(ref _locked, 1, 0) == 1)
             {
             }

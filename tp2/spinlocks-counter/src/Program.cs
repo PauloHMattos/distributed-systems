@@ -33,11 +33,15 @@ namespace tp2
 
             var watch = new Stopwatch();
             watch.Start();
+
+            // Starts the threads stored in the vector
             foreach(var t in threads)
             {
                 t.Start();
             }
             
+            // Joins the threads blocking the main thread until
+            // all other threads have completed
             foreach(var t in threads)
             {
                 t.Join();
@@ -53,6 +57,7 @@ namespace tp2
             var rnd = new Random();
             for (var i = 0; i < vector.Length; i++)
             {
+                // Random.Next => First Value inclusive, second exclusive
                 elements[i] = (char)rnd.Next(-100, 101);
             }
         }
@@ -64,14 +69,18 @@ namespace tp2
             var end = countPerThread;
             for (int i = 0; i < vector.Length - 1; i++)
             {
+                // Each thread will compute the sum of countPerThread (N/K) elements
                 vector[i] = new Thread(() => 
                 {
                     ThreadMethod(start, end);
                 });
 
+                // The next thread bounds
                 start = end;
                 end += countPerThread;
             }
+
+            // The last thread will compute the remainder
             vector[^1] = new Thread(() => 
             {
                 ThreadMethod(start, elements.Length);
@@ -80,15 +89,21 @@ namespace tp2
 
         static void ThreadMethod(int start, int end)
         {
-            var localSum = 0; //sum;
+            // Compute the sum inside the bounds
+            // No synchronization needed as each thread has it's own bounds
+            // And the bounds don't overlap
+            var localSum = 0;
             for (var i = start; i < end; i++)
             {
                 localSum += elements[i];
             }
             
-            // Lock
+            // After this segment of the array is computed
+            // aquire the lock to add the localSum to the global sum
             myLock.Acquire();
             sum += localSum;
+
+            // After the value is modified, release the lock
             myLock.Release();
         }
     }
