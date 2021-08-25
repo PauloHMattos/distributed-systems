@@ -7,7 +7,6 @@ namespace tp2
     unsafe class Program
     {
         static int sum;
-        static int finishedThreads;
         static char[] elements;
         static SpinLock myLock;
 
