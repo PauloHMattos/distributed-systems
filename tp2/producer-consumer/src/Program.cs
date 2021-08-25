@@ -9,6 +9,7 @@ namespace producer_consumer
         static int consumedNumbers = 0;
         static int finishedThreads = 0;
         static Semaphore mutex;
+        static Semaphore mutex2;
         static Semaphore empty;
         static Semaphore full;
 
@@ -140,16 +141,9 @@ namespace producer_consumer
                 empty.Release();
 
                 // Prints whether read resource is prime or not
-                IsPrime(resource);
-                // var str = $"{resource} = {IsPrime(resource)}";
-                // Console.WriteLine(str);
-                // Check prime number
+                var str = $"{resource} = {IsPrime(resource)}";
+                Console.WriteLine(str);
             }
-
-            // Compute a finished thread
-            mutex.WaitOne();
-            finishedThreads++;
-            mutex.Release();
         }
 
         // Auxiliar method used to check whether a number is prime or not
