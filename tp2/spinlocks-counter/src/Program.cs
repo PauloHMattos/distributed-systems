@@ -7,7 +7,6 @@ namespace tp2
     unsafe class Program
     {
         static int sum;
-        static int finishedThreads;
         static char[] elements;
         static SpinLock myLock;
 
@@ -39,9 +38,9 @@ namespace tp2
                 t.Start();
             }
             
-            while (finishedThreads < threads.Length)
+            foreach(var t in threads)
             {
-
+                t.Join();
             }
             
             watch.Stop();
@@ -90,7 +89,6 @@ namespace tp2
             // Lock
             myLock.Acquire();
             sum += localSum;
-            finishedThreads += 1;
             myLock.Release();
         }
     }
