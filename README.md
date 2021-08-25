@@ -22,9 +22,9 @@ build $ make
 ```
 The built application will be available in the path `sockets/[producer/consumer]/bin`
 
-## How to run TP1 programs
+## How to run TP2 programs
 
-First, enter the `tp1` folder, where the various implementations are available.
+First, enter the `tp2` folder, where the various implementations are available.
 
 ### Spinlock counter
 
