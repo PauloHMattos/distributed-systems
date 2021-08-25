@@ -89,7 +89,6 @@ namespace tp2
             // Lock
             myLock.Acquire();
             sum += localSum;
-            finishedThreads += 1;
             myLock.Release();
         }
     }
