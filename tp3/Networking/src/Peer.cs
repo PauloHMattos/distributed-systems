@@ -101,7 +101,7 @@ namespace TP3.Networking
             var endPoint = new IPEndPoint(address, port);
             _logger.WriteLine($"{_boundEndPoint} Peer connecting to {endPoint}");
 
-            var connection = new Connection(endPoint, _nextConnectionId++, _watch.ElapsedMilliseconds);
+            var connection = new Connection(this, endPoint, _nextConnectionId++, _watch.ElapsedMilliseconds);
             _connections.Add(connection.EndPoint, connection);
 
             // Implement connection retry?
@@ -120,7 +120,7 @@ namespace TP3.Networking
         {
             var payload = new byte[message.Length + 1];
             payload[0] = (byte)PacketType.ApplicationMessage;
-            message.CopyTo(payload.AsSpan(0));
+            message.CopyTo(payload.AsSpan(1));
             SendTo(connection, payload);
         }
 
@@ -140,7 +140,7 @@ namespace TP3.Networking
                 }
 
                 connection.LastReceivedTime = _watch.ElapsedMilliseconds;
-
+                //Console.WriteLine(packetType);
                 switch (packetType)
                 {
                     case PacketType.KeepAlive:
@@ -155,6 +155,9 @@ namespace TP3.Networking
                     case PacketType.ApplicationMessage:
                         HandleMessage(connection, packet.Payload.AsSpan(1));
                         break;
+                    
+                    default:
+                        throw new InvalidOperationException();
                 }
             }
 
@@ -223,8 +226,9 @@ namespace TP3.Networking
             }
 
             // Creates connection and send tho the client it's index
-            var connection = new Connection(remoteEndPoint, _nextConnectionId++, _watch.ElapsedMilliseconds);
+            var connection = new Connection(this, remoteEndPoint, _nextConnectionId++, _watch.ElapsedMilliseconds);
             _connections.Add(connection.EndPoint, connection);
+            _onConnected?.Invoke(connection);
 
             SendTo(connection, new byte[2] { (byte)PacketType.Command, (byte)CommandId.ConnectionAccepted });
         }
