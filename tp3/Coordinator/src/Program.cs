@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Text;
-using System.Net;
 using TP3.Networking;
 using TP3.Common;
 using System.Collections.Concurrent;
+using System.Threading;
 
 namespace TP3.Coordinator
 {
@@ -84,7 +83,7 @@ namespace TP3.Coordinator
     {
         private readonly int _maxProcesses;
         private readonly Peer _peer;
-        private readonly MessageHandlerCollection _messageHandlerCollection;
+        static MessageHandlerCollection _messageHandlerCollection;
         private readonly ConcurrentQueue<Connection> _queue;
 
         public Coordinator(int maxProcesses)
@@ -101,6 +100,12 @@ namespace TP3.Coordinator
         }
 
         private void OnMessageReceived(ReadOnlySpan<byte> message, Connection connection)
+        {
+            var receiver = new Thread(StartReceiver);
+            receiver.Start(message, connection);
+        }
+
+        static void StartReceiver(ReadOnlySpan<byte> message, Connection connection)
         {
             _messageHandlerCollection.Handle(connection, message);
         }
