@@ -111,6 +111,7 @@ namespace TP3.Networking
 
         public void Disconnect(Connection connection)
         {
+            connection.Active = false;
             _logger.WriteLine($"{connection.EndPoint} disconnected");
             _connections.Remove(connection.EndPoint);
             _onDisconnected?.Invoke(connection);

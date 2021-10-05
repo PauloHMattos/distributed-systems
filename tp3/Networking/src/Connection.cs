@@ -9,6 +9,7 @@ namespace TP3.Networking
         public IPEndPoint EndPoint;
         public long LastReceivedTime;
         public long LastSendTime;
+        public bool Active;
 
         private readonly Peer _peer;
 
@@ -18,6 +19,7 @@ namespace TP3.Networking
             EndPoint = endPoint;
             Index = index;
             LastReceivedTime = connectionTime;
+            Active = true;
         }
 
         public void SendMessage(ReadOnlySpan<byte> message)
