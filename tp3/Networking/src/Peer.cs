@@ -228,9 +228,8 @@ namespace TP3.Networking
             // Creates connection and send tho the client it's index
             var connection = new Connection(this, remoteEndPoint, _nextConnectionId++, _watch.ElapsedMilliseconds);
             _connections.Add(connection.EndPoint, connection);
-            _onConnected?.Invoke(connection);
-
             SendTo(connection, new byte[2] { (byte)PacketType.Command, (byte)CommandId.ConnectionAccepted });
+            _onConnected?.Invoke(connection);
         }
 
         private void HandleMessage(Connection connection, Span<byte> message)
