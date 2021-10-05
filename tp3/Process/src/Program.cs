@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using TP3.Networking;
 using TP3.Common;
+using System.Threading;
 
 namespace TP3.Process
 {
@@ -48,6 +49,13 @@ namespace TP3.Process
     {
         public override MessageType MessageId => MessageType.Grant;
 
+        private readonly int _k;
+
+        public GrantMessageHandler(int k)
+        {
+            _k = k;
+        }
+
         public override void Handle(Connection connection, int? id)
         {
             if (!id.HasValue)
@@ -64,7 +72,7 @@ namespace TP3.Process
 
             file.Write(Encoding.UTF8.GetBytes(builder.ToString()));
 
-            // TODO: Wait K seconds.
+            Thread.Sleep(_k * 1000);
         }
     }
 
@@ -96,6 +104,8 @@ namespace TP3.Process
         public Process()
         {
             Data = new ProcessData();
+            // Sleeping interval in seconds, which should be gotten from CLI.
+            var k = 2;
 
             _peer = Peer.CreateClientPeer(Console.Out, 512, 512, 5000);
             _peer.AttachCallbacks(OnConnected, OnDisconnected, OnMessageReceived);
@@ -103,6 +113,7 @@ namespace TP3.Process
             _messageHandlerCollection = new MessageHandlerCollection();
 
             _messageHandlerCollection.AddHandler(new SetIdMessageHandler(Data));
+            _messageHandlerCollection.AddHandler(new GrantMessageHandler(k));
         }
 
         private void OnMessageReceived(ReadOnlySpan<byte> message, Connection connection)
@@ -117,6 +128,8 @@ namespace TP3.Process
         private void OnConnected(Connection connection)
         {
             Console.WriteLine($"OnConnected  {connection.EndPoint}");
+            var requestMessage = Message.Build(MessageType.Request);
+            connection.SendMessage(requestMessage.Data);
         }
 
         public void Start()
