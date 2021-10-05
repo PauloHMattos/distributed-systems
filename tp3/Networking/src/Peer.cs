@@ -194,7 +194,7 @@ namespace TP3.Networking
                     break;
 
                 default:
-                    throw new InvalidOperationException($"Unconnected remotes can send only connection request packets: {commandId}");
+                    break;
             }
         }
 

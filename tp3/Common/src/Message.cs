@@ -81,7 +81,6 @@ namespace TP3.Common
 
         public bool Handle(Connection connection, ReadOnlySpan<byte> message)
         {
-            Console.WriteLine("Received a message");
             Message.Parse(message, out var messageId, out var id);
 
             if (!_handlers.TryGetValue(messageId, out var handler))
