@@ -26,56 +26,39 @@ namespace TP3.Coordinator
     {
         public override MessageType MessageId => MessageType.Request;
 
-        private readonly ConcurrentQueue<Connection> _queue;
+        private readonly Coordinator _coordinator;
 
-        public RequestMessageHandler(ConcurrentQueue<Connection> queue)
+        public RequestMessageHandler(Coordinator queue)
         {
-            _queue = queue;
+            _coordinator = queue;
         }
 
         public override void Handle(Connection connection, int? id)
         {
-            _queue.Enqueue(connection);
+            Console.WriteLine("[RequestMessageHandler.Handle]");
+            _coordinator.Enqueue(connection);
         }
     }
 
     internal class ReleaseMessageHandler : MessageHandler
     {
-        public override MessageType MessageId => MessageType.Request;
+        public override MessageType MessageId => MessageType.Release;
 
-        private readonly ConcurrentQueue<Connection> _queue;
+        private readonly Coordinator _coordinator;
 
-        public ReleaseMessageHandler(ConcurrentQueue<Connection> queue)
+        public ReleaseMessageHandler(Coordinator queue)
         {
-            _queue = queue;
+            _coordinator = queue;
         }
 
         public override void Handle(Connection connection, int? id)
         {
-            if (!_queue.TryPeek(out var current))
+            Console.WriteLine("[ReleaseMessageHandler.Handle]");
+            if (!_coordinator.Release(connection))
             {
-                Console.WriteLine("[ReleaseMessageHandler] Invalid Release. Empty Queue");
                 connection.Disconnect();
-                return;
             }
-
-            if (current != connection)
-            {
-                Console.WriteLine($"[ReleaseMessageHandler] Invalid Release. {current.Index} != {connection.Index}");
-                connection.Disconnect();
-                return;
-            }
-
-            Debug.Assert(_queue.TryDequeue(out current));
-            Debug.Assert(current == connection);
-            
-            if (!_queue.TryPeek(out current))
-            {
-                return;
-            }
-
-            var grantMessage = Message.Build(MessageType.Grant);
-            current.SendMessage(grantMessage.Data);
+            _coordinator.Grant();
         }
     }
 
@@ -83,8 +66,10 @@ namespace TP3.Coordinator
     {
         private readonly int _maxProcesses;
         private readonly Peer _peer;
-        static MessageHandlerCollection _messageHandlerCollection;
+        private readonly MessageHandlerCollection _messageHandlerCollection;
         private readonly ConcurrentQueue<Connection> _queue;
+        private readonly Thread _peerUpdateThread;
+        public Connection? CurrentProcessWithLock { get; private set; }
 
         public Coordinator(int maxProcesses)
         {
@@ -95,30 +80,28 @@ namespace TP3.Coordinator
             _queue = new ConcurrentQueue<Connection>();
             _messageHandlerCollection = new MessageHandlerCollection();
 
-            _messageHandlerCollection.AddHandler(new RequestMessageHandler(_queue));
-            _messageHandlerCollection.AddHandler(new ReleaseMessageHandler(_queue));
+            _messageHandlerCollection.AddHandler(new RequestMessageHandler(this));
+            _messageHandlerCollection.AddHandler(new ReleaseMessageHandler(this));
+
+            _peerUpdateThread = new Thread(UpdatePeer);
         }
 
         private void OnMessageReceived(ReadOnlySpan<byte> message, Connection connection)
-        {
-            var receiver = new Thread(StartReceiver);
-            receiver.Start(message, connection);
-        }
-
-        static void StartReceiver(ReadOnlySpan<byte> message, Connection connection)
         {
             _messageHandlerCollection.Handle(connection, message);
         }
 
         private void OnDisconnected(Connection connection)
         {
+            if (connection == CurrentProcessWithLock)
+            {
+                Grant();
+            }
         }
 
         private void OnConnected(Connection connection)
         {
-            Console.WriteLine($"Connected! {connection.EndPoint}");
-            
-            var message = Message.Build(MessageType.SetId);
+            var message = Message.Build(MessageType.SetId, connection.Index);
             Console.WriteLine(message.ToString());
             connection.SendMessage(message.Data);
         }
@@ -126,11 +109,57 @@ namespace TP3.Coordinator
         public void Start()
         {
             _peer.Listen(27000);
+            _peerUpdateThread.Start(_peer);
         }
 
         public void Update()
         {
-            _peer.Update();
+        }
+
+        public static void UpdatePeer(object? peer)
+        {
+            while(true)
+            {
+                ((Peer)peer!).Update();
+                // Sleep a bit to keep the CPU cool
+                Thread.Sleep(50);
+            }
+        }
+
+        public void Grant()
+        {
+            CurrentProcessWithLock = null;
+
+            while (_queue.TryDequeue(out var current))
+            {
+                if (!current.Active)
+                {
+                    continue;
+                }
+
+                CurrentProcessWithLock = current;
+                var grantMessage = Message.Build(MessageType.Grant);
+                current.SendMessage(grantMessage.Data);
+            }
+        }
+
+        public void Enqueue(Connection connection)
+        {
+            _queue.Enqueue(connection);
+            if (CurrentProcessWithLock is null)
+            {
+                Grant();
+            }
+        }
+
+        public bool Release(Connection connection)
+        {
+            if (connection != CurrentProcessWithLock)
+            {
+                Console.WriteLine($"[Release] Invalid Release. {connection.Index} != {CurrentProcessWithLock?.Index}");
+                return false;
+            }
+            return true;
         }
     }
 }

@@ -42,6 +42,7 @@ namespace TP3.Process
                 return;
             }
             _processData.Initialize(connection, id.Value);
+            _processData.Request();
         }
     }
 
@@ -49,38 +50,42 @@ namespace TP3.Process
     {
         public override MessageType MessageId => MessageType.Grant;
 
-        private readonly int _k;
+        private readonly ProcessData _processData;
 
-        public GrantMessageHandler(int k)
+        public GrantMessageHandler(ProcessData processData)
         {
-            _k = k;
+            _processData = processData;
         }
 
         public override void Handle(Connection connection, int? id)
         {
-            if (!id.HasValue)
+            Console.WriteLine("[GrantMessageHandler.Handle]");
+            var timeString = DateTime.Now.ToString("hh:mm:ss.fff tt");
+            var resultString = $"Id: {_processData.Index}, time: {timeString}\n";
+
+            using var file = File.Open("resultado.txt", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             {
-                Console.WriteLine("[SetIdMessageHandler] Id not provided");
-                connection.Disconnect();
-                return;
+                Console.Write(resultString);
+                file.Write(Encoding.UTF8.GetBytes(resultString));
             }
 
-            using var file = File.Open("resultado.txt", FileMode.Append);
-            var builder = new StringBuilder();
-            var timeString = DateTime.Now.ToString("hh:mm:ss");
-            builder.Append($"Id: {id}, time: {timeString}");
-
-            file.Write(Encoding.UTF8.GetBytes(builder.ToString()));
-
-            Thread.Sleep(_k * 1000);
+            Thread.Sleep(_processData.SleepTime * 1000);
+            _processData.Release();
+            _processData.Request();
         }
     }
 
     internal class ProcessData
     {
-        public int? Index { get; private set; } = null;
+        public int? Index { get; private set; }
+        public int SleepTime { get; }
         public Connection? Connection { get; private set; }
         public bool Initialized => Index.HasValue;
+
+        public ProcessData(int sleepTime)
+        {
+            SleepTime = sleepTime;
+        }
 
         public void Initialize(Connection connection, int index)
         {
@@ -91,6 +96,20 @@ namespace TP3.Process
             Connection = connection;
             Index = index;
             Console.WriteLine($"[ProcessData] index = {index}");
+        }
+
+        public void Request()
+        {
+            Console.WriteLine("Sending request");
+            var requestMessage = Message.Build(MessageType.Request);
+            Connection!.SendMessage(requestMessage.Data);
+        }
+
+        public void Release()
+        {
+            Console.WriteLine("Sending Release");
+            var requestMessage = Message.Build(MessageType.Release);
+            Connection!.SendMessage(requestMessage.Data);
         }
     }
 
@@ -103,9 +122,9 @@ namespace TP3.Process
 
         public Process()
         {
-            Data = new ProcessData();
             // Sleeping interval in seconds, which should be gotten from CLI.
             var k = 2;
+            Data = new ProcessData(k);
 
             _peer = Peer.CreateClientPeer(Console.Out, 512, 512, 5000);
             _peer.AttachCallbacks(OnConnected, OnDisconnected, OnMessageReceived);
@@ -113,7 +132,7 @@ namespace TP3.Process
             _messageHandlerCollection = new MessageHandlerCollection();
 
             _messageHandlerCollection.AddHandler(new SetIdMessageHandler(Data));
-            _messageHandlerCollection.AddHandler(new GrantMessageHandler(k));
+            _messageHandlerCollection.AddHandler(new GrantMessageHandler(Data));
         }
 
         private void OnMessageReceived(ReadOnlySpan<byte> message, Connection connection)
@@ -128,8 +147,6 @@ namespace TP3.Process
         private void OnConnected(Connection connection)
         {
             Console.WriteLine($"OnConnected  {connection.EndPoint}");
-            var requestMessage = Message.Build(MessageType.Request);
-            connection.SendMessage(requestMessage.Data);
         }
 
         public void Start()
