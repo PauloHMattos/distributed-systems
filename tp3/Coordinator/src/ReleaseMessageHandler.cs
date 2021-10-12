@@ -20,7 +20,6 @@ namespace TP3.Coordinator
             {
                 connection.Disconnect();
             }
-            _coordinator.Grant();
         }
     }
 }

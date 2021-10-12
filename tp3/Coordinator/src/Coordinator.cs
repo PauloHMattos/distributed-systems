@@ -48,7 +48,7 @@ namespace TP3.Coordinator
         {
             if (connection == CurrentProcessWithLock)
             {
-                Grant();
+                CurrentProcessWithLock = null;
             }
         }
 
@@ -63,7 +63,7 @@ namespace TP3.Coordinator
         public void Start()
         {
             _peer.Listen(27000);
-            _peerUpdateThread.Start(_peer);
+            _peerUpdateThread.Start(this);
         }
 
         public void Update()
@@ -96,10 +96,17 @@ namespace TP3.Coordinator
 
         public static void UpdatePeer(object? state)
         {
-            var peer = ((Peer)state!);
+            var coordinator = ((Coordinator)state!);
+            var peer = coordinator._peer;
             while(true)
             {
                 peer.Update();
+                
+                if (coordinator.CurrentProcessWithLock is null)
+                {
+                    coordinator.Grant();
+                }
+
                 // Sleep a bit to keep the CPU cool
                 Thread.Sleep(50);
             }
@@ -135,10 +142,6 @@ namespace TP3.Coordinator
         public void Enqueue(Connection connection)
         {
             _queue.Enqueue(connection);
-            if (CurrentProcessWithLock is null || !CurrentProcessWithLock.Active)
-            {
-                Grant();
-            }
         }
 
         public bool Release(Connection connection)

@@ -33,8 +33,10 @@ namespace TP3.Process
             Thread.Sleep(_processData.SleepTime * 1000);
             _processData.Release();
 
-            if (_processData.RepetitionsCounter >= _processData.RepetitionsNumber) {
-                Console.WriteLine("Sending disconnect");
+            if (_processData.RepetitionsCounter >= _processData.RepetitionsNumber)
+            {
+                // Sleep to have time to flush messages in the Peer Thread 
+                Thread.Sleep(100);
                 connection.Disconnect();
                 return;
             }
