@@ -29,6 +29,7 @@ namespace TP3.Networking
 
         public void Disconnect()
         {
+            _peer.SendImmediatelyTo(this, new byte[2] { (byte)PacketType.Command, (byte)CommandId.Disconnect });
             _peer.Disconnect(this);
         }
     }

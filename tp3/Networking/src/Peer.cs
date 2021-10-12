@@ -99,7 +99,7 @@ namespace TP3.Networking
             Bind(IPAddress.Any, 0);
 
             var endPoint = new IPEndPoint(address, port);
-            _logger.WriteLine($"{_boundEndPoint} Peer connecting to {endPoint}");
+            // Console.WriteLine($"{_boundEndPoint} Peer connecting to {endPoint}");
 
             var connection = new Connection(this, endPoint, _nextConnectionId++, _watch.ElapsedMilliseconds);
             _connections.Add(connection.EndPoint, connection);
@@ -109,15 +109,15 @@ namespace TP3.Networking
             _peerThreading.Start();
         }
 
-        public void Disconnect(Connection connection)
+        internal void Disconnect(Connection connection)
         {
             connection.Active = false;
-            _logger.WriteLine($"{connection.EndPoint} disconnected");
+            // Console.WriteLine($"{connection.EndPoint} disconnected");
             _connections.Remove(connection.EndPoint);
             _onDisconnected?.Invoke(connection);
         }
 
-        public void SendMessage(Connection connection, ReadOnlySpan<byte> message)
+        internal void SendMessage(Connection connection, ReadOnlySpan<byte> message)
         {
             var payload = new byte[message.Length + 1];
             payload[0] = (byte)PacketType.ApplicationMessage;
@@ -141,7 +141,6 @@ namespace TP3.Networking
                 }
 
                 connection.LastReceivedTime = _watch.ElapsedMilliseconds;
-                //Console.WriteLine(packetType);
                 switch (packetType)
                 {
                     case PacketType.KeepAlive:
@@ -182,7 +181,7 @@ namespace TP3.Networking
         {
             _boundEndPoint = new IPEndPoint(address, port);
             _socket.Bind(_boundEndPoint);
-            _logger.WriteLine($"Bound to {_boundEndPoint}");
+            // Console.WriteLine($"Bound to {_boundEndPoint}");
         }
 
         private void HandleUnconnectedCommand(IPEndPoint remoteEndPoint, Span<byte> command)
@@ -205,11 +204,16 @@ namespace TP3.Networking
             switch (commandId)
             {
                 case CommandId.ConnectionRefused:
-                    Debug.Assert(_connections.Remove(connection.EndPoint));
+                    var removed = _connections.Remove(connection.EndPoint);
+                    Debug.Assert(removed);
                     break;
                     
                 case CommandId.ConnectionAccepted:
                     _onConnected?.Invoke(connection);
+                    break;
+
+                case CommandId.Disconnect:
+                    Disconnect(connection);
                     break;
 
                 default:
@@ -250,19 +254,27 @@ namespace TP3.Networking
         }
 
 
-        private void SendTo(Connection connection, byte[] payload)
+        internal void SendTo(Connection connection, byte[] payload)
         {
             connection.LastSendTime = _watch.ElapsedMilliseconds;
             ScheduleSend(connection.EndPoint, payload);
         }
 
+
+        internal void SendImmediatelyTo(Connection connection, byte[] payload)
+        {
+            connection.LastSendTime = _watch.ElapsedMilliseconds;
+            _socket.SendTo(payload, 0, payload.Length, SocketFlags.None, connection.EndPoint);
+        }
+
         private void ScheduleSend(IPEndPoint destination, byte[] payload)
         {
-            Debug.Assert(_peerThreading.OutputChannel.Writer.TryWrite(new Packet()
+            var writen = _peerThreading.OutputChannel.Writer.TryWrite(new Packet()
             {
                 Payload = payload,
                 RemoteEndPoint = destination
-            }));
+            });
+            Debug.Assert(writen);
         }
     }
 }

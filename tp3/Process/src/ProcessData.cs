@@ -8,12 +8,15 @@ namespace TP3.Process
     {
         public int? Index { get; private set; }
         public int SleepTime { get; }
+        public int RepetitionsNumber { get; }
+        public int RepetitionsCounter { get; private set; }
         public Connection? Connection { get; private set; }
         public bool Initialized => Index.HasValue;
 
-        public ProcessData(int sleepTime)
+        public ProcessData(int sleepTime, int repetitionsNumber)
         {
             SleepTime = sleepTime;
+            RepetitionsNumber = repetitionsNumber;
         }
 
         public void Initialize(Connection connection, int index)
@@ -29,13 +32,13 @@ namespace TP3.Process
 
         public void Request()
         {
-            Console.WriteLine("Sending request");
             var requestMessage = Message.Build(MessageType.Request);
             Connection!.SendMessage(requestMessage.Data);
         }
 
         public void Release()
         {
+            RepetitionsCounter += 1;
             Console.WriteLine("Sending Release");
             var requestMessage = Message.Build(MessageType.Release);
             Connection!.SendMessage(requestMessage.Data);

@@ -4,6 +4,7 @@ using TP3.Common;
 using System.Collections.Concurrent;
 using System.Threading;
 using System.IO;
+using System.Diagnostics;
 
 namespace TP3.Coordinator
 {
@@ -15,25 +16,27 @@ namespace TP3.Coordinator
         private readonly MessageHandlerCollection _messageHandlerCollection;
         private readonly ConcurrentQueue<Connection> _queue;
         private readonly Thread _peerUpdateThread;
-        private readonly Thread _userInterfaceThread;
         public Connection? CurrentProcessWithLock { get; private set; }
+
+        private readonly ConcurrentDictionary<Connection, int> _executionsCounter;
 
         public Coordinator(int maxProcesses)
         {
-
             _maxProcesses = maxProcesses;
-            _logger = File.CreateText("log.txt");
+            var streamWriter = File.CreateText("log.txt");
+            streamWriter.AutoFlush = true;
+            _logger = streamWriter;
             _peer = Peer.CreateServerPeer(_logger, 512, 512,  _maxProcesses, 5000);
             _peer.AttachCallbacks(OnConnected, OnDisconnected, OnMessageReceived);
 
+            _executionsCounter = new ConcurrentDictionary<Connection, int>();
             _queue = new ConcurrentQueue<Connection>();
-            _messageHandlerCollection = new MessageHandlerCollection();
+            _messageHandlerCollection = new MessageHandlerCollection(_logger);
 
             _messageHandlerCollection.AddHandler(new RequestMessageHandler(this));
             _messageHandlerCollection.AddHandler(new ReleaseMessageHandler(this));
 
             _peerUpdateThread = new Thread(UpdatePeer);
-            _userInterfaceThread = new Thread(StartUserInterface);
         }
 
         private void OnMessageReceived(ReadOnlySpan<byte> message, Connection connection)
@@ -51,8 +54,9 @@ namespace TP3.Coordinator
 
         private void OnConnected(Connection connection)
         {
+            _executionsCounter.TryAdd(connection, 0);
+            _logger.WriteLine($"[S] {MessageType.SetId} - {connection.Index} - {DateTime.Now.ToString("hh:mm:ss.fff tt")}");
             var message = Message.Build(MessageType.SetId, connection.Index);
-            Console.WriteLine(message.ToString());
             connection.SendMessage(message.Data);
         }
 
@@ -60,52 +64,49 @@ namespace TP3.Coordinator
         {
             _peer.Listen(27000);
             _peerUpdateThread.Start(_peer);
-            _userInterfaceThread.Start(_queue);
         }
 
         public void Update()
         {
+            Console.Write ("> ");
+            switch (Console.ReadLine())
+            {
+                case "1":
+                    Console.Write("|");
+                    foreach (var connection in _queue)
+                    {
+                        Console.Write($"{connection.Index} -> ");
+                    }
+                    Console.WriteLine($"end");
+                    break;
+
+                case "2":
+                    foreach (var kvp in _executionsCounter)
+                    {
+                        Console.WriteLine($"| {kvp.Key.Index} = {kvp.Value}");
+                    }
+                    break;
+
+                case "3":
+                    Console.WriteLine("Finishing the execution...");
+                    Environment.Exit(0);
+                    break;
+            }
         }
 
-        public static void UpdatePeer(object? peer)
+        public static void UpdatePeer(object? state)
         {
+            var peer = ((Peer)state!);
             while(true)
             {
-                ((Peer)peer!).Update();
+                peer.Update();
                 // Sleep a bit to keep the CPU cool
                 Thread.Sleep(50);
             }
         }
 
-        public static void StartUserInterface(object? queue)
-        {
-            Console.Write("Waiting for one of the following commands:\n\n");
-            Console.Write("\t1: Prints the current requests queue.\n");
-            Console.Write("\t2: Prints how many times each process has been served.\n");
-            Console.Write("\t3: Finishes the execution.\n");
-            while (true) {
-                switch (Console.ReadLine())
-                {
-                    case "1":
-                        foreach (var connection in (ConcurrentQueue<Connection>)queue!) {
-                            Console.WriteLine(connection.Index);
-                        }
-                        break;
-                    case "2":
-                        // TODO
-                        break;
-                    case "3":
-                        Console.WriteLine("Finishing the execution...");
-                        Environment.Exit(0);
-                        break;
-                }
-            }
-        }
-
         public void Grant()
         {
-            CurrentProcessWithLock = null;
-
             while (_queue.TryDequeue(out var current))
             {
                 if (!current.Active)
@@ -114,15 +115,27 @@ namespace TP3.Coordinator
                 }
 
                 CurrentProcessWithLock = current;
+                _logger.WriteLine($"[S] {MessageType.Grant} - {current.Index} - {DateTime.Now.ToString("hh:mm:ss.fff tt")}");
+
                 var grantMessage = Message.Build(MessageType.Grant);
                 current.SendMessage(grantMessage.Data);
+
+                if (_executionsCounter.TryGetValue(current, out var count))
+                {
+                    _executionsCounter[current] = ++count;
+                }
+                else
+                {
+                    Debug.Fail("Connection not found in dictionary");
+                }
+                break;
             }
         }
 
         public void Enqueue(Connection connection)
         {
             _queue.Enqueue(connection);
-            if (CurrentProcessWithLock is null)
+            if (CurrentProcessWithLock is null || !CurrentProcessWithLock.Active)
             {
                 Grant();
             }
@@ -135,6 +148,7 @@ namespace TP3.Coordinator
                 Console.WriteLine($"[Release] Invalid Release. {connection.Index} != {CurrentProcessWithLock?.Index}");
                 return false;
             }
+            CurrentProcessWithLock = null;
             return true;
         }
     }

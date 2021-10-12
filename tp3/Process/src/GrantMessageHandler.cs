@@ -24,7 +24,7 @@ namespace TP3.Process
             var timeString = DateTime.Now.ToString("hh:mm:ss.fff tt");
             var resultString = $"Id: {_processData.Index}, time: {timeString}\n";
 
-            using var file = File.Open("resultado.txt", FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
+            using (var file = File.Open("resultado.txt", FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             {
                 Console.Write(resultString);
                 file.Write(Encoding.UTF8.GetBytes(resultString));
@@ -32,6 +32,12 @@ namespace TP3.Process
 
             Thread.Sleep(_processData.SleepTime * 1000);
             _processData.Release();
+
+            if (_processData.RepetitionsCounter >= _processData.RepetitionsNumber) {
+                Console.WriteLine("Sending disconnect");
+                connection.Disconnect();
+                return;
+            }
             _processData.Request();
         }
     }

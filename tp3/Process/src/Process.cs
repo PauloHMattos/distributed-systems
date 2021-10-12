@@ -2,6 +2,7 @@ using System;
 using System.Net;
 using TP3.Networking;
 using TP3.Common;
+using System.Threading;
 
 namespace TP3.Process
 {
@@ -12,16 +13,14 @@ namespace TP3.Process
         private readonly Peer _peer;
         private readonly MessageHandlerCollection _messageHandlerCollection;
 
-        public Process()
+        public Process(int sleepTime, int repetitionsNumber)
         {
-            // Sleeping interval in seconds, which should be gotten from CLI.
-            var k = 2;
-            Data = new ProcessData(k);
+            Data = new ProcessData(sleepTime, repetitionsNumber);
 
             _peer = Peer.CreateClientPeer(Console.Out, 512, 512, 5000);
             _peer.AttachCallbacks(OnConnected, OnDisconnected, OnMessageReceived);
 
-            _messageHandlerCollection = new MessageHandlerCollection();
+            _messageHandlerCollection = new MessageHandlerCollection(Console.Out);
 
             _messageHandlerCollection.AddHandler(new SetIdMessageHandler(Data));
             _messageHandlerCollection.AddHandler(new GrantMessageHandler(Data));
@@ -34,6 +33,7 @@ namespace TP3.Process
 
         private void OnDisconnected(Connection connection)
         {
+            Environment.Exit(0);
         }
 
         private void OnConnected(Connection connection)
@@ -44,11 +44,13 @@ namespace TP3.Process
         public void Start()
         {
             _peer.Connect(IPAddress.Parse("127.0.0.1"), 27000);
+            Console.WriteLine($"Start");
         }
 
         public void Update()
         {
             _peer.Update();
+            Thread.Yield();
         }
     }
 }

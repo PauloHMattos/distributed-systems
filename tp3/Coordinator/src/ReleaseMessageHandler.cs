@@ -1,4 +1,3 @@
-using System;
 using TP3.Networking;
 using TP3.Common;
 
@@ -17,7 +16,6 @@ namespace TP3.Coordinator
 
         public override void Handle(Connection connection, int? id)
         {
-            Console.WriteLine("[ReleaseMessageHandler.Handle]");
             if (!_coordinator.Release(connection))
             {
                 connection.Disconnect();

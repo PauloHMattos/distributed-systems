@@ -5,5 +5,6 @@ namespace TP3.Networking
         ConnectionRequested,
         ConnectionAccepted,
         ConnectionRefused,
+        Disconnect,
     }
 }

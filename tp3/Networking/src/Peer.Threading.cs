@@ -41,7 +41,7 @@ namespace TP3.Networking
                     {
                         FlushSendChannel();
                         Receive();
-                        Thread.Yield();
+                        Thread.Sleep(10);
                     }
                 }
                 catch (ThreadAbortException)
@@ -69,7 +69,8 @@ namespace TP3.Networking
                         Payload = payload,
                         RemoteEndPoint = (IPEndPoint)remoteEndPoint
                     };
-                    Debug.Assert(InputChannel.Writer.TryWrite(packet));
+                    var writen = InputChannel.Writer.TryWrite(packet);
+                    Debug.Assert(writen);
                 }
             }
 
